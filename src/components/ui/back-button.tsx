@@ -19,7 +19,7 @@ export function BackButton({ label = "Voltar", fallbackHref = "/" }: { label?: s
     <button
       type="button"
       onClick={goBack}
-      className="group inline-flex items-center gap-2 rounded-full border border-line bg-white py-1 pl-1 pr-4 text-sm font-extrabold text-navy shadow-[0_1px_2px_rgba(11,20,69,.08)] transition-all hover:border-navy/30 hover:bg-navy-soft/60 active:scale-[.97]"
+      className="group inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1 pl-1 pr-4 text-sm font-extrabold text-ink shadow-[0_1px_2px_rgba(11,20,69,.08)] transition-all hover:border-navy/30 hover:bg-navy-soft/60 active:scale-[.97]"
     >
       <span className="grid h-7 w-7 place-items-center rounded-full bg-crimson text-white transition-colors group-hover:bg-crimson-dark">
         <ArrowLeft size={15} strokeWidth={3} className="transition-transform group-hover:-translate-x-0.5" />

@@ -4,11 +4,11 @@ import { api } from "@/lib/api";
 
 function Stat({ icon, tone, value, label }: { icon: ReactNode; tone: string; value: number; label: string }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-line bg-white p-5 shadow-[0_1px_3px_rgba(11,20,69,.06)]">
-      <span className={`grid h-12 w-12 place-items-center rounded-xl ${tone}`}>{icon}</span>
+    <div className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4 sm:gap-4 sm:p-5 shadow-[0_1px_3px_rgba(11,20,69,.06)]">
+      <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl sm:h-12 sm:w-12 ${tone}`}>{icon}</span>
       <div>
-        <div className="text-3xl font-extrabold leading-none">{value}</div>
-        <div className="mt-1 text-sm font-semibold text-muted">{label}</div>
+        <div className="text-2xl font-extrabold leading-none sm:text-3xl">{value}</div>
+        <div className="mt-1 text-xs font-semibold leading-tight text-muted sm:text-sm">{label}</div>
       </div>
     </div>
   );
@@ -17,11 +17,11 @@ function Stat({ icon, tone, value, label }: { icon: ReactNode; tone: string; val
 export async function SummaryCards() {
   const s = await api.orders.summary();
   return (
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-6 xl:grid-cols-4">
       <Stat icon={<Clock size={22} />} tone="bg-amber-soft text-ink" value={s.pending} label="Encomendas pendentes" />
-      <Stat icon={<AlertTriangle size={22} />} tone="bg-crimson-soft text-crimson" value={s.urgent} label="Urgentes" />
-      <Stat icon={<Calendar size={22} />} tone="bg-crimson-soft text-crimson" value={s.dueIn7Days} label="Entregam nos próximos 7 dias" />
-      <Stat icon={<Check size={22} />} tone="bg-ok-soft text-ok" value={s.deliveredThisMonth} label="Entregues neste mês" />
+      <Stat icon={<AlertTriangle size={22} />} tone="bg-crimson-soft text-crimson-ink" value={s.urgent} label="Urgentes" />
+      <Stat icon={<Calendar size={22} />} tone="bg-crimson-soft text-crimson-ink" value={s.dueIn7Days} label="Entregam nos próximos 7 dias" />
+      <Stat icon={<Check size={22} />} tone="bg-ok-soft text-ok-ink" value={s.deliveredThisMonth} label="Entregues neste mês" />
     </div>
   );
 }

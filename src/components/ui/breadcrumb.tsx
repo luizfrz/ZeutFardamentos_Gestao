@@ -13,7 +13,7 @@ export function Breadcrumb({ items }: { items: { label: string; href?: string }[
       {trail.map((it) => (
         <span key={it.label} className="flex items-center gap-2">
           <span className="text-subtle" aria-hidden>/</span>
-          {it.href ? <Link href={it.href} className="text-crimson hover:underline">{it.label}</Link> : <span className="text-muted">{it.label}</span>}
+          {it.href ? <Link href={it.href} className="text-crimson-ink hover:underline">{it.label}</Link> : <span className="text-muted">{it.label}</span>}
         </span>
       ))}
     </nav>

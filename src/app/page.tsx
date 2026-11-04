@@ -23,12 +23,12 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
         <OverdueAlert />
       </Suspense>
 
-      <Suspense fallback={<div className="h-24 animate-pulse rounded-2xl bg-white/60" />}>
+      <Suspense fallback={<div className="h-24 animate-pulse rounded-2xl bg-surface/60" />}>
         <SummaryCards />
       </Suspense>
 
       <div className="mt-8">
-        <Suspense fallback={<div className="h-24 rounded-2xl bg-white/60" />}><Filters /></Suspense>
+        <Suspense fallback={<div className="h-24 rounded-2xl bg-surface/60" />}><Filters /></Suspense>
       </div>
 
       <Suspense fallback={<OrdersSkeleton />}>

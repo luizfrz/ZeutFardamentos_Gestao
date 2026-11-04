@@ -32,7 +32,7 @@ export function ResponsibleForm({ onSaved, onCancel }: { onSaved: (r: Responsibl
   }
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[1fr_380px]">
+    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
       <Card className="p-7">
         <StepTitle n={1} title="Dados do responsável" subtitle="Pessoa da Zeut que acompanha o pedido do início à entrega." />
         <div className="grid gap-5 md:grid-cols-2">
@@ -55,7 +55,7 @@ export function ResponsibleForm({ onSaved, onCancel }: { onSaved: (r: Responsibl
         <div className="mt-5 space-y-3 border-t border-line pt-5">
           <Button className="w-full" disabled={!valid || saving} onClick={() => save(false)}><Check size={16} />Salvar responsável</Button>
           <Button variant="outline" className="w-full" disabled={!valid || saving} onClick={() => save(true)}><Package size={16} />Salvar e criar pedido</Button>
-          {errors.length > 0 && <ul role="alert" className="space-y-1 rounded-xl bg-crimson-soft p-3 text-xs font-semibold text-crimson">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
+          {errors.length > 0 && <ul role="alert" className="space-y-1 rounded-xl bg-crimson-soft p-3 text-xs font-semibold text-crimson-ink">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
           <Button variant="ghost" className="w-full" onClick={onCancel}>Cancelar</Button>
         </div>
       </Card>

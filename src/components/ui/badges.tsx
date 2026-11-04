@@ -5,7 +5,7 @@ import type { OrderStatus, Priority } from "@/lib/types";
 const PRIORITY: Record<Priority, { label: string; cls: string; dot: string }> = {
   URGENTE: { label: "URGENTE", cls: "bg-crimson text-white", dot: "bg-white" },
   ALTA: { label: "ALTA", cls: "bg-coral text-white", dot: "bg-white" },
-  MEDIA: { label: "MÉDIA", cls: "bg-amber text-ink", dot: "bg-ink" },
+  MEDIA: { label: "MÉDIA", cls: "bg-amber text-navy-fixed", dot: "bg-ink" },
   BAIXA: { label: "BAIXA", cls: "bg-navy-soft text-ink", dot: "bg-ink" },
 };
 export const PRIORITY_BAR: Record<Priority, string> = { URGENTE: "bg-crimson", ALTA: "bg-coral", MEDIA: "bg-amber", BAIXA: "bg-slate" };
@@ -22,7 +22,7 @@ export function PriorityBadge({ priority }: { priority: Priority }) {
 const STATUS: Record<OrderStatus, { label: string; cls: string }> = {
   NAO_INICIADO: { label: "Não iniciado", cls: "bg-navy-soft text-ink" },
   PENDENTE: { label: "Pendente", cls: "bg-amber-soft text-ink" },
-  CONCLUIDO: { label: "Concluído", cls: "bg-ok-soft text-ok" },
+  CONCLUIDO: { label: "Concluído", cls: "bg-ok-soft text-ok-ink" },
 };
 export const STATUS_LABEL = (s: OrderStatus) => STATUS[s].label;
 

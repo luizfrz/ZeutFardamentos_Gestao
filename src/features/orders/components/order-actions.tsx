@@ -33,7 +33,7 @@ export function OrderActions({ id, status }: { id: string; status: OrderStatus }
           </>
         )}
       </div>
-      {error && <p role="alert" className="text-sm font-semibold text-crimson">{error}</p>}
+      {error && <p role="alert" className="text-sm font-semibold text-crimson-ink">{error}</p>}
     </div>
   );
 }

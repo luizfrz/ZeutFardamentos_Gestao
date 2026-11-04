@@ -54,6 +54,7 @@ export const api = {
   molds: {
     list: () => request<Mold[]>("/molds"),
     create: (body: unknown) => request<Mold>("/molds", { method: "POST", body: JSON.stringify(body) }),
+    remove: (id: string) => request<{ id: string }>(`/molds/${id}`, { method: "DELETE" }),
   },
   sizeGrids: () => request<SizeGrid[]>("/size-grids"),
 };

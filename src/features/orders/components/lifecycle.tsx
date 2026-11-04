@@ -15,7 +15,7 @@ export function Lifecycle({ status }: { status: OrderStatus }) {
           <li key={s.key} className="flex flex-1 flex-col last:flex-none">
             <div className="flex items-center">
               <span className={cx("grid h-7 w-7 shrink-0 place-items-center rounded-full border-2",
-                i < cur || status === "CONCLUIDO" ? "border-ok bg-ok text-white" : i === cur ? "border-navy bg-navy" : "border-slate bg-white")}>
+                i < cur || status === "CONCLUIDO" ? "border-ok bg-ok text-white" : i === cur ? "border-navy bg-navy" : "border-slate bg-surface")}>
                 {i < cur || status === "CONCLUIDO" ? <Check size={14} strokeWidth={3.5} /> : i === cur && <span className="h-2 w-2 rounded-full bg-white" />}
               </span>
               {i < steps.length - 1 && <span className={cx("mx-2 h-0.5 flex-1", i < cur ? "bg-ok" : "bg-line")} />}

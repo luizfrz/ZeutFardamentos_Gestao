@@ -14,7 +14,7 @@ const EXAMPLE: Record<MoldCategory, string> = {
   OUTRO: "",
 };
 export function MoldModal({ molds, grids, onClose, onSaved }: {
-  molds: Mold[]; grids: SizeGrid[]; onClose: () => void; onSaved: (m: Mold, addToOrder: boolean) => void;
+  molds: Mold[]; grids: SizeGrid[]; onClose: () => void; onSaved: (m: Mold) => void;
 }) {
   const [category, setCategory] = useState<MoldCategory>("BLUSA");
   const [name, setName] = useState("");
@@ -41,7 +41,7 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
   const groups = [...new Set(molds.map((m) => m.group).filter(Boolean))] as string[];
   const toggle = <T,>(arr: T[], v: T) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
-  async function save(addToOrder: boolean) {
+  async function save() {
     const errs: string[] = [];
     if (!name.trim()) errs.push("Informe o nome do molde");
     if (isVariation && !variationOfId) errs.push("Escolha de qual modelo este é uma variação");
@@ -56,27 +56,27 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
         ...(category === "BLUSA" ? { models, gridIds } : {}),
         ...(category === "OUTRO" ? { group: group.trim() || undefined, hasSizes } : {}),
       });
-      onSaved(mold, addToOrder);
+      onSaved(mold);
     } catch (e) {
       setErrors(e instanceof ApiError ? e.messages : ["Não foi possível salvar o molde"]);
     } finally { setSaving(false); }
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-navy/55 p-4" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div role="dialog" aria-modal="true" aria-labelledby="mold-title" className="flex max-h-[calc(100dvh-2rem)] w-full max-w-[640px] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl">
-        <div className="overflow-y-auto px-8 pb-6 pt-8">
+    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-scrim p-4" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div role="dialog" aria-modal="true" aria-labelledby="mold-title" className="flex max-h-[calc(100dvh-2rem)] w-full max-w-[640px] flex-col overflow-hidden rounded-3xl bg-surface shadow-2xl">
+        <div className="overflow-y-auto px-5 pb-6 pt-6 sm:px-8 sm:pt-8">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
-              <h2 id="mold-title" className="text-3xl font-extrabold">Novo tipo de produto</h2>
+              <h2 id="mold-title" className="text-2xl font-extrabold sm:text-3xl">Novo tipo de produto</h2>
               <p className="mt-1 text-sm text-muted">Use o nome como o molde é intitulado na produção.</p>
             </div>
             <button type="button" onClick={onClose} aria-label="Fechar" className="grid h-10 w-10 place-items-center rounded-full bg-cream hover:bg-navy-soft"><X size={18} /></button>
           </div>
 
-          <div className="mb-1.5 text-sm font-extrabold">Categoria<span className="text-crimson">*</span></div>
-          <div className="[&>div]:flex [&>div]:w-full [&_button]:flex-1 [&_button]:justify-center">
-            <Segmented<MoldCategory> value={category} onChange={(c) => { setCategory(c); setVariationOfId(""); }}
+          <div className="mb-1.5 text-sm font-extrabold">Categoria<span className="text-crimson-ink">*</span></div>
+          <div>
+            <Segmented<MoldCategory> fill value={category} onChange={(c) => { setCategory(c); setVariationOfId(""); }}
               options={(Object.keys(CATEGORY_LABEL) as MoldCategory[]).map((c) => ({ value: c, label: CATEGORY_LABEL[c], icon: categoryIcon(c) }))} />
           </div>
 
@@ -98,17 +98,17 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
 
           {category === "BLUSA" && (
             <>
-              <div className="mt-5 text-sm font-extrabold">Modelos disponíveis <span className="text-crimson">*</span> <span className="font-normal text-muted">selecione um ou mais</span></div>
+              <div className="mt-5 text-sm font-extrabold">Modelos disponíveis <span className="text-crimson-ink">*</span> <span className="font-normal text-muted">selecione um ou mais</span></div>
               <div className="mt-2.5 flex flex-wrap gap-2.5">
                 {allModels.map((m) => (
                   <button key={m} type="button" aria-pressed={models.includes(m)} onClick={() => setModels(toggle(models, m))}
-                    className={cx("flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold", models.includes(m) ? "bg-navy text-white" : "border border-slate bg-white")}>
+                    className={cx("flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold", models.includes(m) ? "bg-navy text-white" : "border border-slate bg-surface")}>
                     {models.includes(m) && <Check size={14} />}{m}
                   </button>
                 ))}
               </div>
               {newModel === null ? (
-                <button type="button" onClick={() => setNewModel("")} className="mt-3 flex items-center gap-1.5 text-sm font-bold text-crimson"><Plus size={16} />Novo modelo</button>
+                <button type="button" onClick={() => setNewModel("")} className="mt-3 flex items-center gap-1.5 text-sm font-bold text-crimson-ink"><Plus size={16} />Novo modelo</button>
               ) : (
                 <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); const v = newModel.trim(); if (v && !allModels.includes(v)) { setAllModels([...allModels, v]); setModels([...models, v]); } setNewModel(null); }}>
                   <Input value={newModel} onChange={(e) => setNewModel(e.target.value)} placeholder="Nome do modelo" autoFocus className="py-2" />
@@ -116,7 +116,7 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
                 </form>
               )}
 
-              <div className="mt-6 text-sm font-extrabold">Grades de tamanho <span className="text-crimson">*</span> <span className="font-normal text-muted">o pedido mostrará só as grades marcadas</span></div>
+              <div className="mt-6 text-sm font-extrabold">Grades de tamanho <span className="text-crimson-ink">*</span> <span className="font-normal text-muted">o pedido mostrará só as grades marcadas</span></div>
               <div className="mt-2.5 space-y-3">
                 {grids.map((g) => (
                   <div key={g.id} className={cx("rounded-xl border-2 p-3.5", gridIds.includes(g.id) ? "border-navy" : "border-line")}>
@@ -128,7 +128,7 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
                   </div>
                 ))}
               </div>
-              <p className="mt-3 flex items-center gap-1.5 text-sm font-bold text-crimson"><Pencil size={14} />Os tamanhos de cada grade são definidos no catálogo de grades</p>
+              <p className="mt-3 flex items-center gap-1.5 text-sm font-bold text-crimson-ink"><Pencil size={14} />Os tamanhos de cada grade são definidos no catálogo de grades</p>
             </>
           )}
 
@@ -154,13 +154,12 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
             </Field>
           )}
 
-          {errors.length > 0 && <ul role="alert" className="mt-5 space-y-1 rounded-xl bg-crimson-soft p-3.5 text-sm font-semibold text-crimson">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
+          {errors.length > 0 && <ul role="alert" className="mt-5 space-y-1 rounded-xl bg-crimson-soft p-3.5 text-sm font-semibold text-crimson-ink">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
         </div>
 
-        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-line bg-cream-2 px-8 py-5">
-          <Button variant="ghost" onClick={onClose}>Cancelar</Button>
-          <Button variant="outline" disabled={saving} onClick={() => save(false)}>Salvar</Button>
-          <Button disabled={saving} onClick={() => save(true)}><Check size={16} />Salvar e adicionar ao pedido</Button>
+        <div className="flex flex-col-reverse gap-3 border-t border-line bg-cream-2 px-5 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:px-8 sm:py-5">
+          <Button variant="ghost" className="w-full sm:w-auto" onClick={onClose}>Cancelar</Button>
+          <Button className="w-full sm:w-auto" disabled={saving} onClick={save}><Check size={16} />Salvar e adicionar ao pedido</Button>
         </div>
       </div>
     </div>

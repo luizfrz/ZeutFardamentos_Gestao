@@ -16,7 +16,7 @@ export function StepTitle({ n, title, subtitle }: { n: number; title: string; su
 
 export function ChecklistItem({ ok, children }: { ok: boolean; children: ReactNode }) {
   return (
-    <li className={cx("flex items-center gap-2.5 text-sm font-semibold", ok ? "text-muted" : "text-crimson")}>
+    <li className={cx("flex items-center gap-2.5 text-sm font-semibold", ok ? "text-muted" : "text-crimson-ink")}>
       <span className={cx("grid h-[22px] w-[22px] shrink-0 place-items-center rounded-full border-2", ok ? "border-ok bg-ok text-white" : "border-crimson bg-crimson-soft")}>
         {ok && <Check size={13} strokeWidth={3.5} />}
       </span>{children}

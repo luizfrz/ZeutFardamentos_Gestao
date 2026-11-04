@@ -8,7 +8,7 @@ export function OrderCard({ order }: { order: Order }) {
   return (
     <Link
       href={`/orders/${order.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-white p-4 pl-5 shadow-[0_1px_3px_rgba(11,20,69,.06)] transition-shadow hover:shadow-lg focus-visible:shadow-lg"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-surface p-4 pl-5 shadow-[0_1px_3px_rgba(11,20,69,.06)] transition-shadow hover:shadow-lg focus-visible:shadow-lg"
     >
       <span className={cx("absolute inset-y-0 left-0 w-1.5", PRIORITY_BAR[order.priority])} />
       <div className="mb-4 grid h-[132px] place-items-center rounded-xl border border-line bg-cream-2 text-slate">
@@ -25,7 +25,7 @@ export function OrderCard({ order }: { order: Order }) {
       </ul>
       <div className="mt-auto flex items-center justify-between">
         <StatusBadge status={order.status} />
-        <span className="flex items-center gap-1 text-sm font-bold text-crimson">Ver detalhes<ChevronRight size={16} className="transition-transform group-hover:translate-x-0.5" /></span>
+        <span className="flex items-center gap-1 text-sm font-bold text-crimson-ink">Ver detalhes<ChevronRight size={16} className="transition-transform group-hover:translate-x-0.5" /></span>
       </div>
     </Link>
   );

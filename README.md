@@ -52,6 +52,14 @@ Regras: `app/` não contém lógica; `features/*` importam de `components/ui` e 
 - **Data de entrega**: classificada em tempo real (passada / hoje / P.E. 1–3); data passada exige confirmação antes de salvar.
 - **Responsável**: nome, CPF e telefone (com DDD) obrigatórios.
 
+## Tema claro/escuro e PWA
+
+- **Modo escuro**: botão sol/lua no cabeçalho; segue o tema do sistema até haver uma escolha, que fica salva no aparelho.
+  Cores são tokens CSS em `src/app/globals.css` (`:root` = claro, `[data-theme="dark"]` = escuro) — para ajustar a paleta, edite só esse arquivo.
+  Use as classes semânticas (`bg-surface`, `text-ink`, `text-crimson-ink`, `text-ok-ink`…) e não cores fixas (`bg-white`).
+- **PWA** (`src/app/manifest.ts`, `public/sw.js`, `public/icons/`): instalável, com página offline. O Service Worker só é registrado em produção
+  e não guarda páginas nem dados da API, só arquivos estáticos.
+
 ## Quando a API está fora do ar
 
 As telas mostram "Não foi possível carregar os dados" com o botão **Tentar novamente** (`src/app/error.tsx`), mantendo o cabeçalho;

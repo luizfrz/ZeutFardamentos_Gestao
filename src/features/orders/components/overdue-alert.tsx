@@ -19,13 +19,13 @@ export async function OverdueAlert() {
         <div className="flex items-start gap-3">
           <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-crimson text-white"><AlertTriangle size={19} /></span>
           <div>
-            <h2 className="text-lg font-extrabold text-crimson">
+            <h2 className="text-lg font-extrabold text-crimson-ink">
               {overdue.length === 1 ? "Há 1 pedido atrasado" : `Há ${overdue.length} pedidos atrasados`}
             </h2>
             <p className="text-sm font-semibold text-ink">A data de entrega já passou e eles ainda não foram concluídos.</p>
           </div>
         </div>
-        <Link href="/?deadline=LATE" className="flex items-center gap-1 rounded-xl border-2 border-crimson bg-white px-4 py-2 text-sm font-bold text-crimson hover:bg-crimson hover:text-white">
+        <Link href="/?deadline=LATE" className="flex items-center gap-1 rounded-xl border-2 border-crimson bg-surface px-4 py-2 text-sm font-bold text-crimson-ink hover:bg-crimson hover:text-white">
           Ver atrasados<ChevronRight size={16} />
         </Link>
       </div>

@@ -68,12 +68,12 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
   }
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[1fr_380px]">
+    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
       <div className="space-y-6">
         <Card className="p-7">
           <StepTitle n={1} title="Identificação" subtitle="Clientes podem ser pessoas, empresas ou órgãos públicos." />
-          <div className="mb-1.5 text-sm font-extrabold">Tipo de cliente <span className="text-crimson">*</span></div>
-          <Segmented<ClientType> value={type} onChange={(t) => { setType(t); setDoc(""); setDocTouched(false); }}
+          <div className="mb-1.5 text-sm font-extrabold">Tipo de cliente <span className="text-crimson-ink">*</span></div>
+          <Segmented<ClientType> fill value={type} onChange={(t) => { setType(t); setDoc(""); setDocTouched(false); }}
             options={[{ value: "PF", label: "Pessoa física", icon: <User size={16} /> }, { value: "PJ", label: "Empresa (PJ)", icon: <Building2 size={16} /> }, { value: "ORGAO", label: "Órgão público", icon: <Building2 size={16} /> }]} />
           <div className="mt-6 grid gap-5 md:grid-cols-2">
             <Field label="Nome / Razão social" required><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
@@ -90,10 +90,10 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
             {contacts.map((c, i) => (
               <div key={i} className={i > 0 ? "border-t border-line pt-6" : ""}>
                 <div className="mb-1.5 flex items-center justify-between text-sm font-extrabold">
-                  <span>Tipo de contato <span className="text-crimson">*</span></span>
-                  {i > 0 && <button type="button" aria-label="Remover contato" onClick={() => setContacts(contacts.filter((_, j) => j !== i))} className="text-muted hover:text-crimson"><X size={16} /></button>}
+                  <span>Tipo de contato <span className="text-crimson-ink">*</span></span>
+                  {i > 0 && <button type="button" aria-label="Remover contato" onClick={() => setContacts(contacts.filter((_, j) => j !== i))} className="text-muted hover:text-crimson-ink"><X size={16} /></button>}
                 </div>
-                <Segmented<ContactKind> value={c.kind} onChange={(k) => setContact(i, { kind: k, value: "" })}
+                <Segmented<ContactKind> fill value={c.kind} onChange={(k) => setContact(i, { kind: k, value: "" })}
                   options={[{ value: "TELEFONE", label: "Telefone", icon: <Phone size={16} /> }, { value: "WHATSAPP", label: "WhatsApp", icon: <MessageCircle size={16} /> }, { value: "INSTAGRAM", label: "Instagram", icon: <AtSign size={16} /> }]} />
                 <div className="mt-5 md:w-1/2">
                   <Field label={c.kind === "INSTAGRAM" ? "Perfil do Instagram" : `Número do ${KIND_LABEL[c.kind]}`} required>
@@ -114,7 +114,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
               </div>
             ))}
           </div>
-          <button type="button" onClick={() => setContacts([...contacts, emptyContact()])} className="mt-6 flex items-center gap-1.5 text-sm font-bold text-crimson"><Plus size={16} />Adicionar outra forma de contato</button>
+          <button type="button" onClick={() => setContacts([...contacts, emptyContact()])} className="mt-6 flex items-center gap-1.5 text-sm font-bold text-crimson-ink"><Plus size={16} />Adicionar outra forma de contato</button>
         </Card>
 
         <Card className="p-7">
@@ -153,7 +153,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
         <div className="mt-5 space-y-3 border-t border-line pt-5">
           <Button className="w-full" disabled={!valid || saving} onClick={() => save(false)}><Check size={16} />Salvar cliente</Button>
           <Button variant="outline" className="w-full" disabled={!valid || saving} onClick={() => save(true)}><Package size={16} />Salvar e criar pedido</Button>
-          {errors.length > 0 && <ul role="alert" className="space-y-1 rounded-xl bg-crimson-soft p-3 text-xs font-semibold text-crimson">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
+          {errors.length > 0 && <ul role="alert" className="space-y-1 rounded-xl bg-crimson-soft p-3 text-xs font-semibold text-crimson-ink">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
           <Button variant="ghost" className="w-full" onClick={onCancel}>Cancelar</Button>
         </div>
       </Card>

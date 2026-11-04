@@ -38,7 +38,7 @@ export async function PendingOrders({ searchParams }: { searchParams: Promise<Re
 export function OrdersSkeleton() {
   return (
     <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      {Array.from({ length: 4 }, (_, i) => <div key={i} className="h-[360px] animate-pulse rounded-2xl bg-white/60" />)}
+      {Array.from({ length: 4 }, (_, i) => <div key={i} className="h-[360px] animate-pulse rounded-2xl bg-surface/60" />)}
     </div>
   );
 }

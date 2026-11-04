@@ -53,7 +53,7 @@ export function PersonPicker({ label, docLabel, people, value, onChange, onCreat
           />
         </Field>
         {open && !selected && (
-          <ul role="listbox" className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-xl border border-line bg-white shadow-xl">
+          <ul role="listbox" className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-xl border border-line bg-surface shadow-xl">
             {matches.slice(0, 6).map((p) => (
               <li key={p.id}>
                 <button type="button" role="option" aria-selected={false} onMouseDown={(e) => e.preventDefault()}
@@ -67,13 +67,13 @@ export function PersonPicker({ label, docLabel, people, value, onChange, onCreat
             {matches.length === 0 && <li className="px-4 py-3 text-sm text-muted">Nenhum resultado</li>}
             {onCreate && (
               <li className="border-t border-line bg-cream-2">
-                <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={onCreate} className="w-full px-4 py-3 text-left text-sm font-bold text-crimson">+ {createLabel}</button>
+                <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={onCreate} className="w-full px-4 py-3 text-left text-sm font-bold text-crimson-ink">+ {createLabel}</button>
               </li>
             )}
           </ul>
         )}
       </div>
-      <Field label={docLabel} required error={docError} hint={selected ? <span className="font-semibold text-ok">{selected.document.length === 14 ? "CNPJ válido" : "CPF válido"} · preenchido ao escolher. Alterar o documento troca a seleção.</span> : undefined}>
+      <Field label={docLabel} required error={docError} hint={selected ? <span className="font-semibold text-ok-ink">{selected.document.length === 14 ? "CNPJ válido" : "CPF válido"} · preenchido ao escolher. Alterar o documento troca a seleção.</span> : undefined}>
         <Input value={doc} onChange={(e) => typeDoc(e.target.value)} inputMode="numeric" placeholder={allowCnpj ? "CPF ou CNPJ" : "000.000.000-00"} valid={!!selected} invalid={!!docError} />
       </Field>
     </div>

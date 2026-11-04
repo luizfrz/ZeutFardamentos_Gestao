@@ -16,7 +16,7 @@ import { ProductPicker } from "./product-picker";
 
 let seq = 0;
 const key = () => `i${++seq}`;
-const DEADLINE_TONE = { danger: "text-crimson", warn: "text-crimson", info: "text-muted", ok: "text-ok" } as const;
+const DEADLINE_TONE = { danger: "text-crimson-ink", warn: "text-crimson-ink", info: "text-muted", ok: "text-ok-ink" } as const;
 
 function toDraft(it: NonNullable<Order["items"]>[number]): DraftItem {
   return {
@@ -109,7 +109,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   const nameInvalid = touched && !name.trim();
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[1fr_380px]">
+    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
       <div className="space-y-6">
         <Card className="p-7">
           <StepTitle n={1} title="Vínculos" subtitle="Todo pedido precisa de um cliente e de um responsável." />
@@ -135,10 +135,13 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
                 onChange={(p) => patch(it.key, p)} onRemove={() => setItems((xs) => xs.filter((x) => x.key !== it.key))} />
             ))}
             <button type="button" onClick={() => setPicker((v) => !v)} aria-expanded={picker}
-              className={cx("flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-crimson bg-crimson-soft/70 py-4 text-[15px] font-bold text-crimson hover:bg-crimson-soft", touched && !checks.products && "ring-2 ring-crimson")}>
+              className={cx("flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-crimson bg-crimson-soft/70 py-4 text-[15px] font-bold text-crimson-ink hover:bg-crimson-soft", touched && !checks.products && "ring-2 ring-crimson")}>
               <Plus size={18} />Adicionar produto
             </button>
-            {picker && <ProductPicker molds={allMolds} onPick={addMold} onCreate={() => setModal(true)} />}
+            {picker && (
+              <ProductPicker molds={allMolds} inUseIds={items.map((i) => i.moldId)} onPick={addMold} onCreate={() => setModal(true)}
+                onDeleted={(id) => setAllMolds((l) => l.filter((m) => m.id !== id))} />
+            )}
           </div>
         </Card>
 
@@ -164,7 +167,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
                 onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); setFiles([...files, ...Array.from(e.dataTransfer.files).filter((f) => /^image\/(png|jpeg)$/.test(f.type))]); }}
                 className="flex h-36 w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-crimson/60 bg-crimson-soft/40 text-sm">
                 <Upload size={22} className="text-muted" />
-                <span>Arraste imagens ou <span className="font-bold text-crimson">escolha arquivos</span></span>
+                <span>Arraste imagens ou <span className="font-bold text-crimson-ink">escolha arquivos</span></span>
                 <span className="text-xs text-muted">PNG ou JPG, até 10 MB</span>
               </button>
               {files.length > 0 && (
@@ -181,7 +184,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
                   <Input key={i} value={l} icon={<Link2 size={17} />} aria-label={`Link ${i + 1}`} placeholder="Cole um link (arte, planilha…)" onChange={(e) => setLinks(links.map((x, j) => (j === i ? e.target.value : x)))} />
                 ))}
               </div>
-              <button type="button" onClick={() => setLinks([...links, ""])} className="mt-3 flex items-center gap-1.5 text-sm font-bold text-crimson"><Plus size={16} />Adicionar outro link</button>
+              <button type="button" onClick={() => setLinks([...links, ""])} className="mt-3 flex items-center gap-1.5 text-sm font-bold text-crimson-ink"><Plus size={16} />Adicionar outro link</button>
             </div>
           </div>
         </Card>
@@ -208,8 +211,8 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
         </ul>
         <div className="mt-5 space-y-3 border-t border-line pt-5">
           <Button className="w-full" disabled={!valid || saving} onClick={requestSave}>{initial ? "Salvar alterações" : "Salvar pedido"}</Button>
-          {!valid && <p className="flex items-start gap-2 text-xs font-bold text-crimson"><TriangleAlert size={14} className="mt-0.5 shrink-0" />{firstMissing} para liberar o salvamento.</p>}
-          {errors.length > 0 && <ul role="alert" className="space-y-1 rounded-xl bg-crimson-soft p-3 text-xs font-semibold text-crimson">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
+          {!valid && <p className="flex items-start gap-2 text-xs font-bold text-crimson-ink"><TriangleAlert size={14} className="mt-0.5 shrink-0" />{firstMissing} para liberar o salvamento.</p>}
+          {errors.length > 0 && <ul role="alert" className="space-y-1 rounded-xl bg-crimson-soft p-3 text-xs font-semibold text-crimson-ink">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
           <Button variant="ghost" className="w-full" onClick={() => router.back()}>Cancelar</Button>
         </div>
       </Card>
@@ -223,7 +226,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
 
       {modal && (
         <MoldModal molds={allMolds} grids={grids} onClose={() => setModal(false)}
-          onSaved={(m, add) => { setAllMolds((l) => [...l, m]); setModal(false); if (add) addMold(m); else setPicker(true); }} />
+          onSaved={(m) => { setAllMolds((l) => [...l, m]); setModal(false); addMold(m); }} />
       )}
     </div>
   );

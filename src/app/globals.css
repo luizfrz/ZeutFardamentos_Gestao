@@ -1,35 +1,100 @@
 @import "tailwindcss";
 
+/* Tema escuro ativado por <html data-theme="dark"> (definido antes da pintura por um script no layout). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ───────── Paleta ─────────
+ * Claro = valores originais da marca (azul-marinho, carmim, creme).
+ * Escuro = mesma identidade sobre fundo azul-noite; cores de texto/acento clareadas p/ manter contraste. */
+:root {
+  --c-page: #fff4e0;        /* fundo da página */
+  --c-surface: #ffffff;     /* cartões, campos, modais */
+  --c-header: #0b1445;      /* barra superior */
+  --c-scrim: rgb(11 20 69 / 0.55);
+  --c-navy: #0b1445;        /* acento forte: chips, botão "navy", bordas de destaque */
+  --c-navy-fixed: #0b1445;  /* texto escuro sobre amarelo, igual nos dois temas */
+  --c-navy-soft: #e3e5ef;
+  --c-ink: #0b1445;         /* texto principal */
+  --c-muted: #3d4573;
+  --c-subtle: #7a80a3;
+  --c-cream: #fff4e0;       /* elementos em tom creme */
+  --c-cream-2: #fff9ee;     /* painéis internos sutis */
+  --c-line: #e8dfcd;
+  --c-crimson: #c8002e;     /* fundos de botão/barras (texto branco por cima) */
+  --c-crimson-dark: #a80026;
+  --c-crimson-ink: #c8002e; /* carmim usado como cor de texto/ícone */
+  --c-crimson-soft: #fbdde4;
+  --c-coral: #ff6b63;
+  --c-amber: #f5a623;
+  --c-amber-soft: #fdeccb;
+  --c-slate: #9a9dbd;
+  --c-ok: #1b6b46;         /* fundo de marcações (texto branco por cima) */
+  --c-ok-ink: #1b6b46;     /* verde usado como cor de texto/ícone */
+  --c-ok-soft: #dff3e8;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --c-page: #080d2b;
+  --c-surface: #111848;
+  --c-header: #050921;
+  --c-scrim: rgb(0 0 0 / 0.7);
+  --c-navy: #5b6bd6;
+  --c-navy-soft: #1e2760;
+  --c-ink: #f2eee5;
+  --c-muted: #b6bbdc;
+  --c-subtle: #8d95c6;
+  --c-cream: #1a2257;
+  --c-cream-2: #0c1238;
+  --c-line: #28317a;
+  --c-crimson-dark: #a80026;
+  --c-crimson-ink: #ff7390;
+  --c-crimson-soft: #3d1838;
+  --c-amber-soft: #3d3219;
+  --c-slate: #6a73b4;
+  --c-ok: #2f9f6f;
+  --c-ok-ink: #62d9a5;
+  --c-ok-soft: #123c2e;
+  color-scheme: dark;
+}
+
 @theme inline {
-  --color-navy: #0b1445;
-  --color-navy-soft: #e3e5ef;
-  --color-ink: #0b1445;
-  --color-muted: #3d4573;
-  --color-subtle: #7a80a3;
-  --color-cream: #fff4e0;
-  --color-cream-2: #fff9ee;
-  --color-line: #e8dfcd;
-  --color-crimson: #c8002e;
-  --color-crimson-dark: #a80026;
-  --color-crimson-soft: #fbdde4;
-  --color-coral: #ff6b63;
-  --color-amber: #f5a623;
-  --color-amber-soft: #fdeccb;
-  --color-slate: #9a9dbd;
-  --color-ok: #1b6b46;
-  --color-ok-soft: #dff3e8;
+  --color-page: var(--c-page);
+  --color-surface: var(--c-surface);
+  --color-header: var(--c-header);
+  --color-scrim: var(--c-scrim);
+  --color-navy: var(--c-navy);
+  --color-navy-fixed: var(--c-navy-fixed);
+  --color-navy-soft: var(--c-navy-soft);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-subtle: var(--c-subtle);
+  --color-cream: var(--c-cream);
+  --color-cream-2: var(--c-cream-2);
+  --color-line: var(--c-line);
+  --color-crimson: var(--c-crimson);
+  --color-crimson-dark: var(--c-crimson-dark);
+  --color-crimson-ink: var(--c-crimson-ink);
+  --color-crimson-soft: var(--c-crimson-soft);
+  --color-coral: var(--c-coral);
+  --color-amber: var(--c-amber);
+  --color-amber-soft: var(--c-amber-soft);
+  --color-slate: var(--c-slate);
+  --color-ok: var(--c-ok);
+  --color-ok-ink: var(--c-ok-ink);
+  --color-ok-soft: var(--c-ok-soft);
   --font-sans: var(--font-nunito), system-ui, sans-serif;
 }
 
 html { scroll-behavior: smooth; }
 body {
-  background: var(--color-cream);
-  color: var(--color-ink);
+  background: var(--c-page);
+  color: var(--c-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
-:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--c-navy); outline-offset: 2px; }
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }

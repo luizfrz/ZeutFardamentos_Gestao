@@ -31,8 +31,8 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
         <OrderActions id={order.id} status={order.status} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
-        <div className="space-y-6">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="min-w-0 space-y-6">
           <Card className="p-6">
             <CardTitle icon={<ImageIcon size={20} />}>Imagens</CardTitle>
             <div className="mt-5 grid h-72 place-items-center rounded-xl border border-line bg-cream-2 text-center text-sm font-semibold text-muted">
@@ -53,7 +53,7 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
           </Card>
         </div>
 
-        <aside className="space-y-6">
+        <aside className="min-w-0 space-y-6">
           <Card className="p-6">
             <CardTitle icon={<Calendar size={20} />}>Prazo de entrega</CardTitle>
             <div className="mt-5 flex items-center gap-4">
@@ -62,14 +62,14 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
               </div>
               <div>
                 <div className="font-extrabold">{formatWeekday(order.deliveryDate)}</div>
-                <div className={cx("text-sm font-semibold", order.daysLeft < 7 && order.status !== "CONCLUIDO" ? "text-crimson" : "text-muted")}>
+                <div className={cx("text-sm font-semibold", order.daysLeft < 7 && order.status !== "CONCLUIDO" ? "text-crimson-ink" : "text-muted")}>
                   {order.status === "CONCLUIDO" ? `Entregue em ${order.deliveredAt && formatDate(order.deliveredAt)}`
                     : `${order.daysLeft < 0 ? `Atrasado ${-order.daysLeft} dias` : `Faltam ${order.daysLeft} dias`} · P.E. ${order.deadlineLevel}${order.deadlineLevel === 1 ? " (menos de 7 dias)" : ""}`}
                 </div>
               </div>
             </div>
             {order.priority === "URGENTE" && order.status !== "CONCLUIDO" && (
-              <p className="mt-4 flex items-start gap-2 rounded-xl bg-crimson-soft p-3 text-sm font-semibold text-crimson">
+              <p className="mt-4 flex items-start gap-2 rounded-xl bg-crimson-soft p-3 text-sm font-semibold text-crimson-ink">
                 <AlertTriangle size={16} className="mt-0.5 shrink-0" />Prioridade urgente: prazo de até 7 dias com grande quantidade de peças.
               </p>
             )}
@@ -120,8 +120,8 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
               <div className="mt-4 space-y-3">
                 {order.links.map((l) => (
                   <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-xl border border-line bg-cream-2 p-3 hover:border-crimson">
-                    <Link2 size={16} className="shrink-0 text-crimson" />
-                    <span className="min-w-0"><span className="block truncate text-sm font-extrabold text-crimson">{l.label ?? l.url}</span><span className="block truncate text-xs text-muted">{l.url.replace(/^https?:\/\//, "")}</span></span>
+                    <Link2 size={16} className="shrink-0 text-crimson-ink" />
+                    <span className="min-w-0"><span className="block truncate text-sm font-extrabold text-crimson-ink">{l.label ?? l.url}</span><span className="block truncate text-xs text-muted">{l.url.replace(/^https?:\/\//, "")}</span></span>
                   </a>
                 ))}
               </div>
