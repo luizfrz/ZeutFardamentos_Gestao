@@ -60,6 +60,20 @@ Regras: `app/` não contém lógica; `features/*` importam de `components/ui` e 
 - **PWA** (`src/app/manifest.ts`, `public/sw.js`, `public/icons/`): instalável, com página offline. O Service Worker só é registrado em produção
   e não guarda páginas nem dados da API, só arquivos estáticos.
 
+## Deploy na Vercel
+
+O Next.js roda na Vercel sem configuração. Ordem recomendada: **API primeiro**, depois o front.
+
+1. Publique a API (veja o README do projeto `zeut_gestao_api`) e copie a URL **real** dela (Vercel → projeto da API → *Domains*).
+   Confira antes: `https://SEU-PROJETO-API.vercel.app/api/health` deve responder `{"status":"ok"}`.
+2. *Add New → Project* → importe este repositório (preset *Next.js*, detectado sozinho).
+3. Variável de ambiente (Production **e** Preview): `NEXT_PUBLIC_API_URL` = `https://SEU-PROJETO-API.vercel.app/api`
+   — é lida **no build**, então mudar o valor exige novo deploy.
+4. Faça o deploy e copie a URL do front. Volte à API e coloque essa URL em `WEB_ORIGIN` (CORS); redeploy da API.
+5. O PWA só instala em HTTPS — a Vercel já entrega.
+
+> ⚠️ O sistema ainda não tem login. Com a URL pública qualquer pessoa vê e altera os dados. Proteja antes de divulgar.
+
 ## Quando a API está fora do ar
 
 As telas mostram "Não foi possível carregar os dados" com o botão **Tentar novamente** (`src/app/error.tsx`), mantendo o cabeçalho;
