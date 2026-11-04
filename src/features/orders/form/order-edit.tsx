@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError } from "@/lib/api-server";
 import { OrderForm } from "./order-form";
 
 export async function OrderEdit({ params }: { params: Promise<{ id: string }> }) {

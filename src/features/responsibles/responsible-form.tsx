@@ -3,7 +3,7 @@
 import { Check, Package } from "lucide-react";
 import { useState } from "react";
 import { Button, Card, ChecklistItem, Field, Input, StepTitle } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError } from "@/lib/api-client";
 import { isValidCpf, isValidPhone, maskCpf, maskPhone } from "@/lib/documents";
 import type { Responsible } from "@/lib/types";
 

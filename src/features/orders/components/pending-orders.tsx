@@ -1,6 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import { Card } from "@/components/ui";
-import { api } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { OrderCard } from "./order-card";
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);

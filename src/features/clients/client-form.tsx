@@ -3,7 +3,7 @@
 import { Building2, Check, AtSign, MessageCircle, Package, Phone, Plus, Search, TriangleAlert, User, X } from "lucide-react";
 import { useState } from "react";
 import { Button, Card, Checkbox, ChecklistItem, Field, Input, Segmented, Select, StepTitle } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError } from "@/lib/api-client";
 import { isValidCnpj, isValidCpf, maskCep, maskCnpj, maskCpf, maskDocument, maskPhone, onlyDigits } from "@/lib/documents";
 import type { Client, ClientType, ContactKind } from "@/lib/types";
 

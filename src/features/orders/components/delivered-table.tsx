@@ -1,7 +1,7 @@
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui";
-import { api } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { formatDate, piecesLabel } from "@/lib/format";
 
 export async function DeliveredTable() {

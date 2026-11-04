@@ -3,7 +3,7 @@
 import { Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError } from "@/lib/api-client";
 import type { Mold, MoldCategory } from "@/lib/types";
 import { categoryIcon, CATEGORY_LABEL } from "@/features/molds/category";
 

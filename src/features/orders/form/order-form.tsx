@@ -4,7 +4,7 @@ import { Link2, Plus, TriangleAlert, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Button, Card, ChecklistItem, ConfirmDialog, cx, Field, Input, StepTitle, Textarea, PriorityBadge } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError } from "@/lib/api-client";
 import { daysUntil, formatDate, piecesLabel } from "@/lib/format";
 import { classifyDeadline, computePriority } from "@/lib/priority";
 import type { Client, Mold, Order, Responsible, SizeGrid } from "@/lib/types";

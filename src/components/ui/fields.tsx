@@ -15,7 +15,7 @@ export function Field({ label, required, hint, error, children, className }: {
   );
 }
 
-const control = "w-full rounded-xl border bg-surface px-3.5 py-3 text-[15px] font-semibold outline-none transition-colors placeholder:font-normal placeholder:text-subtle focus:border-navy focus:ring-2 focus:ring-navy/25";
+export const control = "w-full rounded-xl border bg-surface px-3.5 py-3 text-[15px] font-semibold outline-none transition-colors placeholder:font-normal placeholder:text-subtle focus:border-navy focus:ring-2 focus:ring-navy/25";
 
 export function Input({ invalid, valid, icon, className, ...p }: InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean; valid?: boolean; icon?: ReactNode }) {
   return (

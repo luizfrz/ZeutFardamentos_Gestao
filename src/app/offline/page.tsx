@@ -1,4 +1,5 @@
 import { WifiOff } from "lucide-react";
+import Image from "next/image";
 
 export const metadata = { title: "Sem conexão · Zeut" };
 
@@ -6,6 +7,9 @@ export const metadata = { title: "Sem conexão · Zeut" };
 export default function OfflinePage() {
   return (
     <div className="mx-auto mt-16 max-w-md rounded-2xl border border-line bg-surface p-10 text-center shadow-[0_1px_3px_rgba(11,20,69,.06)]">
+      <div className="mx-auto mb-6 w-fit rounded-3xl bg-paper p-4">
+        <Image src="/brand/logo-full.webp" alt="Zeut Fardamentos e Confecções" width={440} height={448} unoptimized priority className="h-auto w-28" />
+      </div>
       <div className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-full bg-amber-soft text-ink">
         <WifiOff size={28} />
       </div>

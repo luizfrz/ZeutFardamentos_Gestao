@@ -4,7 +4,7 @@ import { Check, Pencil, Undo2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button, ButtonLink } from "@/components/ui";
-import { api } from "@/lib/api";
+import { api } from "@/lib/api-client";
 import type { OrderStatus } from "@/lib/types";
 
 export function OrderActions({ id, status }: { id: string; status: OrderStatus }) {

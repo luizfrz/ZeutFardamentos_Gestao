@@ -3,7 +3,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect } from "react";
 
-const HEADER_COLOR = { light: "#0b1445", dark: "#050921" } as const;
+const HEADER_COLOR = { light: "#0c1844", dark: "#050921" } as const;
 
 function applyTheme(theme: "light" | "dark") {
   document.documentElement.dataset.theme = theme;

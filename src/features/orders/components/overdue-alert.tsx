@@ -1,6 +1,6 @@
 import { AlertTriangle, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api } from "@/lib/api-server";
 
 const MAX_LISTED = 3;
 const dias = (n: number) => `${n} ${n === 1 ? "dia" : "dias"}`;

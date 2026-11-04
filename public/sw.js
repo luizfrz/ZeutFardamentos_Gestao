@@ -2,10 +2,10 @@
  * - Assets estáticos (/_next/static, ícones, logo): cache-first.
  * - Navegação: sempre rede (os dados são ao vivo); sem rede, mostra /offline.
  * - Nunca guarda HTML de páginas nem respostas da API (dados de clientes e pedidos). */
-const VERSION = "v1";
+const VERSION = "v2";
 const STATIC_CACHE = `zeut-static-${VERSION}`;
 const OFFLINE_URL = "/offline";
-const PRECACHE = [OFFLINE_URL, "/logo.png", "/icons/icon-192.png", "/icons/icon-512.png"];
+const PRECACHE = [OFFLINE_URL, "/brand/avatar-128.webp", "/brand/logo-full.webp", "/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -32,7 +32,7 @@ self.addEventListener("activate", (event) => {
 });
 
 const isStaticAsset = (url) =>
-  url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/") || url.pathname === "/logo.png";
+  url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/") || url.pathname.startsWith("/brand/");
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;

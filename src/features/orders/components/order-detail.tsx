@@ -1,7 +1,7 @@
 import { AlertTriangle, Building2, Calendar, ImageIcon, Link2, MessageCircle, Package, Phone, User } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Breadcrumb, Card, CardTitle, cx, PriorityBadge, StatusBadge } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError } from "@/lib/api-server";
 import { CLIENT_TYPE_LABEL, dayOfMonth, formatDate, formatWeekday, monthAbbr } from "@/lib/format";
 import { formatDocument } from "@/lib/documents";
 import { Lifecycle } from "./lifecycle";

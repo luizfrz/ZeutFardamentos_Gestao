@@ -1,6 +1,6 @@
 import { AlertTriangle, Calendar, Check, Clock } from "lucide-react";
 import type { ReactNode } from "react";
-import { api } from "@/lib/api";
+import { api } from "@/lib/api-server";
 
 function Stat({ icon, tone, value, label }: { icon: ReactNode; tone: string; value: number; label: string }) {
   return (

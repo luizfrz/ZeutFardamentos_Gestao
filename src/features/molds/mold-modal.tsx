@@ -4,7 +4,7 @@ import { Check, Pencil, Plus, TriangleAlert, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CATEGORY_LABEL, categoryIcon } from "./category";
 import { Button, Checkbox, cx, Field, Input, Segmented, Select } from "@/components/ui";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError } from "@/lib/api-client";
 import type { Mold, MoldCategory, SizeGrid } from "@/lib/types";
 
 const DEFAULT_MODELS = ["Gola polo", "Raglan", "Manga longa", "Manga 3/4"];

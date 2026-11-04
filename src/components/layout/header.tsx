@@ -4,10 +4,10 @@ import { Plus, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ThemeToggle } from "./theme-toggle";
 
-export function Header() {
+export function Header({ userMenu }: { userMenu?: ReactNode }) {
   const router = useRouter();
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
@@ -21,7 +21,7 @@ export function Header() {
     <header className="bg-header pt-[env(safe-area-inset-top)] text-white">
       <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-3 gap-y-3 px-4 py-3 sm:gap-x-6 sm:px-10 sm:py-4">
         <Link href="/" className="flex min-w-0 flex-1 items-center gap-3 md:flex-none">
-          <Image src="/logo.png" alt="Zeut" width={48} height={48} className="shrink-0 rounded-full" priority />
+          <Image src="/brand/avatar-128.webp" alt="Zeut" width={48} height={48} unoptimized className="shrink-0 rounded-full" priority />
           <span className="min-w-0 leading-tight">
             <span className="block truncate text-lg font-extrabold">Zeut</span>
             <span className="block truncate text-xs text-white/80">Fardamentos e Confecções</span>
@@ -38,6 +38,7 @@ export function Header() {
         </form>
 
         <ThemeToggle />
+        {userMenu}
 
         <Link href="/register" className="flex shrink-0 items-center gap-1.5 rounded-xl bg-crimson px-3.5 py-2.5 text-sm font-bold hover:bg-crimson-dark sm:gap-2 sm:px-5 sm:py-3 sm:text-[15px]">
           <Plus size={18} />Novo cadastro

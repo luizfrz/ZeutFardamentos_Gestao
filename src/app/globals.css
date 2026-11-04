@@ -4,27 +4,28 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* ───────── Paleta ─────────
- * Claro = valores originais da marca (azul-marinho, carmim, creme).
+ * Claro = cores exatas da marca, lidas da logo oficial (azul #0c1844, carmim #c80036, creme #fff5e1, coral #ff6969).
  * Escuro = mesma identidade sobre fundo azul-noite; cores de texto/acento clareadas p/ manter contraste. */
 :root {
-  --c-page: #fff4e0;        /* fundo da página */
+  --c-page: #fff5e1;        /* fundo da página */
   --c-surface: #ffffff;     /* cartões, campos, modais */
-  --c-header: #0b1445;      /* barra superior */
+  --c-header: #0c1844;      /* barra superior */
   --c-scrim: rgb(11 20 69 / 0.55);
-  --c-navy: #0b1445;        /* acento forte: chips, botão "navy", bordas de destaque */
-  --c-navy-fixed: #0b1445;  /* texto escuro sobre amarelo, igual nos dois temas */
+  --c-navy: #0c1844;        /* acento forte: chips, botão "navy", bordas de destaque */
+  --c-navy-fixed: #0c1844;  /* texto escuro sobre amarelo, igual nos dois temas */
   --c-navy-soft: #e3e5ef;
-  --c-ink: #0b1445;         /* texto principal */
+  --c-ink: #0c1844;         /* texto principal */
   --c-muted: #3d4573;
   --c-subtle: #7a80a3;
-  --c-cream: #fff4e0;       /* elementos em tom creme */
+  --c-paper: #fff5e1;       /* creme FIXO da marca (igual nos dois temas): selo atrás da logo */
+  --c-cream: #fff5e1;       /* elementos em tom creme */
   --c-cream-2: #fff9ee;     /* painéis internos sutis */
   --c-line: #e8dfcd;
-  --c-crimson: #c8002e;     /* fundos de botão/barras (texto branco por cima) */
-  --c-crimson-dark: #a80026;
-  --c-crimson-ink: #c8002e; /* carmim usado como cor de texto/ícone */
+  --c-crimson: #c80036;     /* fundos de botão/barras (texto branco por cima) */
+  --c-crimson-dark: #a8002d;
+  --c-crimson-ink: #c80036; /* carmim usado como cor de texto/ícone */
   --c-crimson-soft: #fbdde4;
-  --c-coral: #ff6b63;
+  --c-coral: #ff6969;
   --c-amber: #f5a623;
   --c-amber-soft: #fdeccb;
   --c-slate: #9a9dbd;
@@ -47,7 +48,7 @@
   --c-cream: #1a2257;
   --c-cream-2: #0c1238;
   --c-line: #28317a;
-  --c-crimson-dark: #a80026;
+  --c-crimson-dark: #a8002d;
   --c-crimson-ink: #ff7390;
   --c-crimson-soft: #3d1838;
   --c-amber-soft: #3d3219;
@@ -69,6 +70,7 @@
   --color-ink: var(--c-ink);
   --color-muted: var(--c-muted);
   --color-subtle: var(--c-subtle);
+  --color-paper: var(--c-paper);
   --color-cream: var(--c-cream);
   --color-cream-2: var(--c-cream-2);
   --color-line: var(--c-line);

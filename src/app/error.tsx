@@ -3,7 +3,7 @@
 import { ServerCrash } from "lucide-react";
 import { useEffect } from "react";
 import { Button, Card } from "@/components/ui";
-import { API_URL } from "@/lib/api";
+import { API_URL } from "@/lib/api-core";
 
 /** Fallback de erro de rota (ex.: API ou banco fora do ar). O header continua visível. */
 export default function RouteError({ error, retry }: { error: unknown; retry: () => void }) {

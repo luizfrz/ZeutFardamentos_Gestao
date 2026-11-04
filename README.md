@@ -19,6 +19,7 @@ Scripts: `dev`, `build`, `start`, `lint`.
 
 ## Telas
 
+- `/login` · `/signup` — entrar e criar conta (páginas estáticas, sem cabeçalho do sistema)
 - `/` Encomendas: resumo, filtros (prioridade/prazo/ciclo/ordenação), cards priorizados e entregues
 - `/register` (botão **Novo cadastro**): dados do cliente · aba Responsável (`?tab=responsible`)
 - `/orders/new` (botão **Cadastrar novo pedido**): escolhe o cliente, já mostra os dados dele, adiciona produtos (+ modal "Novo tipo de produto") e salva (`?client=<id>` / `?responsible=<id>` pré-selecionam)
@@ -72,7 +73,35 @@ O Next.js roda na Vercel sem configuração. Ordem recomendada: **API primeiro**
 4. Faça o deploy e copie a URL do front. Volte à API e coloque essa URL em `WEB_ORIGIN` (CORS); redeploy da API.
 5. O PWA só instala em HTTPS — a Vercel já entrega.
 
-> ⚠️ O sistema ainda não tem login. Com a URL pública qualquer pessoa vê e altera os dados. Proteja antes de divulgar.
+> Com o login, só quem tem conta acessa os dados. Mesmo assim, mantenha secretos o `JWT_SECRET` e o `REGISTRATION_CODE` da API.
+
+## Login e sessão
+
+Todo o sistema exige login. Fluxo: `proxy.ts` manda quem não tem sessão para `/login` (lembrando a página pedida) →
+Server Action chama `POST /auth/login` da API → o token (JWT) fica em um cookie **httpOnly + Secure + SameSite=Lax** (7 dias).
+O JavaScript da página **nunca vê o token**: o servidor do site o anexa nas chamadas à API, e o navegador só fala com o próprio
+domínio pela ponte `/backend/*` (por isso não há CORS nem a API precisa ser pública para o navegador).
+
+| Peça | Onde |
+|---|---|
+| Proteção das páginas (checagem otimista do cookie) | `src/proxy.ts` |
+| Leitura/escrita do cookie de sessão | `src/lib/session.ts`, `src/lib/token.ts` |
+| API para Server Components (anexa o token) | `src/lib/api-server.ts` |
+| API para componentes de cliente (via `/backend`) | `src/lib/api-client.ts` |
+| Ponte navegador → API (com defesa de CSRF) | `src/app/backend/[...path]/route.ts` |
+| Telas e ações de login/cadastro/sair | `src/features/auth/` |
+| Token expirado/inválido → limpa o cookie e volta ao login | `src/app/session-expired/route.ts` |
+
+- **Criar conta** exige o **código de acesso** definido pelo administrador na API (`REGISTRATION_CODE`).
+- **Primeiro acesso em produção**: crie o 1º usuário com `yarn user:create:neon` (no projeto da API) ou cadastre-se em `/signup` com o código.
+- Quem protege os **dados** é a API (valida a assinatura do token a cada chamada); o `proxy.ts` só evita telas vazias.
+- **Variáveis**: nenhuma nova no front. `NEXT_PUBLIC_API_URL` continua valendo; `API_URL` (opcional, privada) tem prioridade no servidor.
+
+## Marca e PWA
+
+As logos originais ficam em `brand/` (não são publicadas). `npm run brand:build` gera tudo a partir delas: logo web (`public/brand/`),
+avatar do cabeçalho, arte do login, ícones do PWA (`public/icons/`), `apple-icon` e favicon. As cores do tema são as da logo
+(azul `#0c1844`, carmim `#c80036`, creme `#fff5e1`, coral `#ff6969`) e estão em `src/app/globals.css`.
 
 ## Quando a API está fora do ar
 
@@ -82,4 +111,5 @@ os formulários mostram "Não foi possível conectar à API…". Veja a seção 
 ## Limitações conhecidas
 
 - Upload de imagens é só pré-visualização local (sem armazenamento).
-- Sem autenticação.
+- Sessão sem revogação imediata: um usuário removido mantém o acesso até o token expirar (até 7 dias).
+- O limite de tentativas de login é por instância (serverless); para um limite global use o Vercel Firewall.

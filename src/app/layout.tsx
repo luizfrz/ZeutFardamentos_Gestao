@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
-import { Suspense } from "react";
-import { Header } from "@/components/layout/header";
 import { ServiceWorkerRegister } from "@/components/layout/service-worker-register";
 import "./globals.css";
 
@@ -17,7 +15,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#0b1445" },
+    { media: "(prefers-color-scheme: light)", color: "#0c1844" },
     { media: "(prefers-color-scheme: dark)", color: "#050921" },
   ],
   width: "device-width",
@@ -34,12 +32,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body className="min-h-screen">
+      <body className="min-h-dvh">
         <ServiceWorkerRegister />
-        <Suspense fallback={<div className="h-20 bg-header" />}>
-          <Header />
-        </Suspense>
-        <main className="mx-auto w-full max-w-[1440px] px-4 pb-16 pt-8 sm:px-10">{children}</main>
+        {children}
       </body>
     </html>
   );
