@@ -1,0 +1,19 @@
+# dependências e builds
+node_modules/
+.next/
+dist/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# ambiente
+.env
+.env.*
+!.env.example
+
+# sistema / editor
+.DS_Store
+*.log
+.idea/
+.vscode/
