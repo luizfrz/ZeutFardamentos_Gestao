@@ -9,7 +9,7 @@ import { safeNext } from "@/lib/token";
 export interface AuthState {
   error?: string;
   errors?: string[];
-  values?: { name?: string; email?: string };
+  values?: { email?: string };
 }
 
 interface AuthResponse { token: string; expiresAt: string }
@@ -35,19 +35,6 @@ export async function loginAction(_prev: AuthState, formData: FormData): Promise
     res = await authRequest<AuthResponse>("/auth/login", { email, password });
   } catch (e) {
     return failure(e, { email });
-  }
-  return finish(res);
-}
-
-export async function signupAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
-  const values = { name: text(formData, "name"), email: text(formData, "email").toLowerCase() };
-  const password = String(formData.get("password") ?? "");
-  if (password !== String(formData.get("confirm") ?? "")) return { error: "As senhas não conferem.", values };
-  let res: AuthResponse;
-  try {
-    res = await authRequest<AuthResponse>("/auth/register", { ...values, password, accessCode: text(formData, "accessCode") });
-  } catch (e) {
-    return failure(e, values);
   }
   return finish(res);
 }

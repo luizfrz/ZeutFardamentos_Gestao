@@ -28,8 +28,8 @@ const request: RequestFn = async <T,>(path: string, init?: RequestInit) => {
 
 export const api = createApi(request);
 
-/** Login/cadastro: chamadas SEM token (rotas públicas da API). */
-export async function authRequest<T>(path: "/auth/login" | "/auth/register", body: unknown): Promise<T> {
+/** Login: chamada SEM token (rota pública da API). */
+export async function authRequest<T>(path: "/auth/login", body: unknown): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`${apiBase()}${path}`, { method: "POST", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

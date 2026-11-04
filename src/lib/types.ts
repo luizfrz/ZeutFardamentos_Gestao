@@ -30,3 +30,5 @@ export interface Order {
 }
 
 export interface Summary { pending: number; urgent: number; dueIn7Days: number; deliveredThisMonth: number }
+
+export interface AppUser { id: string; name: string; email: string; role: "ADMIN" | "USER"; createdAt: string; lastLoginAt: string | null }

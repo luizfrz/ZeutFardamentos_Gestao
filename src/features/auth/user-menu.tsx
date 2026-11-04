@@ -1,4 +1,5 @@
-import { LogOut } from "lucide-react";
+import { LogOut, Users } from "lucide-react";
+import Link from "next/link";
 import { getSessionUser } from "@/lib/session";
 import { logoutAction } from "./actions";
 
@@ -13,6 +14,12 @@ export async function UserMenu() {
         <span className="grid h-9 w-9 place-items-center rounded-full bg-coral text-xs font-extrabold text-navy-fixed" aria-hidden>{initials}</span>
         <span className="max-w-32 truncate">{user.name}</span>
       </span>
+      {user.role === "ADMIN" && (
+        <Link href="/users" aria-label="Gerenciar usuários" title="Usuários"
+          className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white transition-colors hover:bg-white/20 sm:h-11 sm:w-11">
+          <Users size={18} />
+        </Link>
+      )}
       <form action={logoutAction}>
         <button type="submit" aria-label="Sair da conta" title="Sair"
           className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white transition-colors hover:bg-white/20 sm:h-11 sm:w-11">

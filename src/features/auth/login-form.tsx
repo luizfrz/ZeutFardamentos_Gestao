@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Suspense, useActionState } from "react";
 import { loginAction, type AuthState } from "./actions";
 import { authInput, FormError, Label, SubmitButton, useAutoFocus } from "./form-parts";
@@ -30,9 +29,6 @@ export function LoginForm() {
         <FormError state={state} id="login-error" />
         <SubmitButton pending={pending} pendingLabel="Entrando…">Entrar</SubmitButton>
       </form>
-      <p className="mt-6 text-center text-sm font-semibold text-muted">
-        Ainda não tem conta? <Link href="/signup" className="font-extrabold text-crimson-ink hover:underline">Criar conta</Link>
-      </p>
     </>
   );
 }

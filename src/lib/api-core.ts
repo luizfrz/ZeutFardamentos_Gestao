@@ -1,4 +1,4 @@
-import type { Client, Mold, Order, OrderStatus, Responsible, SizeGrid, Summary } from "./types";
+import type { AppUser, Client, Mold, Order, OrderStatus, Responsible, SizeGrid, Summary } from "./types";
 
 /** URL pública da API (usada em mensagens). As chamadas reais passam pelo servidor do site, nunca direto do navegador. */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333/api";
@@ -51,5 +51,13 @@ export function createApi(request: RequestFn) {
       remove: (id: string) => request<{ id: string }>(`/molds/${id}`, { method: "DELETE" }),
     },
     sizeGrids: () => request<SizeGrid[]>("/size-grids"),
+    users: {
+      list: () => request<AppUser[]>("/users"),
+      create: (body: { name: string; email: string; password: string; role: "ADMIN" | "USER" }) =>
+        request<AppUser>("/users", { method: "POST", body: JSON.stringify(body) }),
+      update: (id: string, body: { password?: string; role?: "ADMIN" | "USER" }) =>
+        request<AppUser>(`/users/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+      remove: (id: string) => request<{ id: string }>(`/users/${id}`, { method: "DELETE" }),
+    },
   };
 }

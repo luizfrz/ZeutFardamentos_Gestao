@@ -2,8 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { decodeToken, NEXT_COOKIE, safeNext, SESSION_COOKIE } from "@/lib/token";
 
 /** Páginas que não exigem login. (Arquivos estáticos e /backend ficam fora via `matcher`.) */
-const PUBLIC_PAGES = new Set(["/login", "/signup", "/offline", "/session-expired"]);
-const AUTH_PAGES = new Set(["/login", "/signup"]);
+const PUBLIC_PAGES = new Set(["/login", "/offline", "/session-expired"]);
 
 /**
  * Checagem "otimista" de sessão: só olha o cookie (existe e não expirou). Quem protege os DADOS de verdade é a API,
@@ -19,8 +18,8 @@ export function proxy(req: NextRequest) {
     res.cookies.set(NEXT_COOKIE, safeNext(pathname + search), { httpOnly: true, sameSite: "lax", path: "/", maxAge: 600 });
     return res;
   }
-  // Já logado e abrindo login/cadastro: vai para o painel (exceto quando veio de "sessão expirada").
-  if (session && AUTH_PAGES.has(pathname) && !req.nextUrl.searchParams.has("expired")) {
+  // Já logado e abrindo o login: vai para o painel (exceto quando veio de "sessão expirada").
+  if (session && pathname === "/login" && !req.nextUrl.searchParams.has("expired")) {
     return NextResponse.redirect(new URL("/", req.url));
   }
   return NextResponse.next();

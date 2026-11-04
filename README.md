@@ -19,7 +19,8 @@ Scripts: `dev`, `build`, `start`, `lint`.
 
 ## Telas
 
-- `/login` · `/signup` — entrar e criar conta (páginas estáticas, sem cabeçalho do sistema)
+- `/login` — entrar (página estática, sem cabeçalho do sistema). **Não há cadastro público.**
+- `/users` — administradores criam contas, redefinem senhas, mudam permissões e excluem contas
 - `/` Encomendas: resumo, filtros (prioridade/prazo/ciclo/ordenação), cards priorizados e entregues
 - `/register` (botão **Novo cadastro**): dados do cliente · aba Responsável (`?tab=responsible`)
 - `/orders/new` (botão **Cadastrar novo pedido**): escolhe o cliente, já mostra os dados dele, adiciona produtos (+ modal "Novo tipo de produto") e salva (`?client=<id>` / `?responsible=<id>` pré-selecionam)
@@ -73,7 +74,7 @@ O Next.js roda na Vercel sem configuração. Ordem recomendada: **API primeiro**
 4. Faça o deploy e copie a URL do front. Volte à API e coloque essa URL em `WEB_ORIGIN` (CORS); redeploy da API.
 5. O PWA só instala em HTTPS — a Vercel já entrega.
 
-> Com o login, só quem tem conta acessa os dados. Mesmo assim, mantenha secretos o `JWT_SECRET` e o `REGISTRATION_CODE` da API.
+> Com o login, só quem tem conta acessa os dados. Mantenha secreto o `JWT_SECRET` da API.
 
 ## Login e sessão
 
@@ -89,11 +90,12 @@ domínio pela ponte `/backend/*` (por isso não há CORS nem a API precisa ser p
 | API para Server Components (anexa o token) | `src/lib/api-server.ts` |
 | API para componentes de cliente (via `/backend`) | `src/lib/api-client.ts` |
 | Ponte navegador → API (com defesa de CSRF) | `src/app/backend/[...path]/route.ts` |
-| Telas e ações de login/cadastro/sair | `src/features/auth/` |
+| Telas e ações de login/sair | `src/features/auth/` |
+| Administração de usuários (só admin) | `src/features/users/`, `src/app/(app)/users/` |
 | Token expirado/inválido → limpa o cookie e volta ao login | `src/app/session-expired/route.ts` |
 
-- **Criar conta** exige o **código de acesso** definido pelo administrador na API (`REGISTRATION_CODE`).
-- **Primeiro acesso em produção**: crie o 1º usuário com `yarn user:create:neon` (no projeto da API) ou cadastre-se em `/signup` com o código.
+- **Contas são criadas por administradores** (tela `/users`; botão "Gerar senha forte"). Papéis: `USER` (usa o sistema) e `ADMIN` (também gerencia contas).
+- **Primeiro administrador**: `yarn user:admin:neon` no projeto da API (lê `.env.admin`). Depois, entre e troque a senha em *Usuários*.
 - Quem protege os **dados** é a API (valida a assinatura do token a cada chamada); o `proxy.ts` só evita telas vazias.
 - **Variáveis**: nenhuma nova no front. `NEXT_PUBLIC_API_URL` continua valendo; `API_URL` (opcional, privada) tem prioridade no servidor.
 
