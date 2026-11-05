@@ -84,8 +84,12 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
                   <span className="font-extrabold">{client.name}</span>
                   <span className="rounded-full bg-navy-soft px-2.5 py-0.5 text-xs font-bold">{CLIENT_TYPE_LABEL[client.type]}</span>
                 </div>
-                <div className="mt-4 text-xs font-semibold text-muted">{client.type === "PF" ? "CPF" : "CNPJ"}</div>
-                <div className="font-extrabold">{formatDocument(client.document)}</div>
+                {client.document && (
+                  <>
+                    <div className="mt-4 text-xs font-semibold text-muted">{client.type === "PF" ? "CPF" : "CNPJ"}</div>
+                    <div className="font-extrabold">{formatDocument(client.document)}</div>
+                  </>
+                )}
                 {client.contacts.map((c) => (
                   <div key={c.kind + c.value} className="mt-4 flex items-center gap-3 rounded-xl border border-line bg-cream-2 p-3">
                     {c.kind === "TELEFONE" ? <Phone size={17} /> : <MessageCircle size={17} />}
@@ -107,7 +111,7 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
                   <span className="grid h-11 w-11 place-items-center rounded-full bg-coral text-sm font-extrabold text-white">
                     {responsible.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}
                   </span>
-                  <div><div className="font-extrabold">{responsible.name}</div><div className="text-sm text-muted">CPF {formatDocument(responsible.cpf)}</div></div>
+                  <div><div className="font-extrabold">{responsible.name}</div>{responsible.cpf && <div className="text-sm text-muted">CPF {formatDocument(responsible.cpf)}</div>}</div>
                 </div>
                 <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-muted"><Phone size={15} />Telefone · {responsible.phone}</div>
               </>

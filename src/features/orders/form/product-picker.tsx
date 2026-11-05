@@ -42,7 +42,7 @@ export function ProductPicker({ molds, inUseIds, onPick, onCreate, onDeleted }: 
     <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-lg">
       <label className="flex items-center gap-3 border-b border-line px-5 py-3.5">
         <Search size={17} className="text-muted" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} autoFocus placeholder="Buscar tipo de produto ou molde…" className="flex-1 bg-transparent font-semibold outline-none placeholder:font-normal" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} autoFocus placeholder="Buscar tipo de produto ou molde…" className="flex-1 bg-transparent py-2 font-semibold outline-none placeholder:font-normal" />
       </label>
       <div className="grid gap-6 px-5 py-4 md:grid-cols-3">
         {COLUMNS.map(({ cat, title }) => (
@@ -70,7 +70,7 @@ export function ProductPicker({ molds, inUseIds, onPick, onCreate, onDeleted }: 
         ))}
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line bg-cream-2 px-5 py-3 text-xs">
-        <button type="button" onClick={onCreate} className="flex items-center gap-1.5 text-sm font-bold text-crimson-ink"><Plus size={15} />Cadastrar novo tipo de produto</button>
+        <button type="button" onClick={onCreate} className="flex items-center gap-1.5 py-2.5 text-sm font-bold text-crimson-ink"><Plus size={15} />Cadastrar novo tipo de produto</button>
         <span className="text-muted">Não encontrou o molde? Cadastre sem sair do pedido.</span>
       </div>
 

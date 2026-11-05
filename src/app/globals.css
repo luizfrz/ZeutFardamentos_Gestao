@@ -98,6 +98,13 @@ body {
 
 :focus-visible { outline: 2px solid var(--c-navy); outline-offset: 2px; }
 
+/* Em telas de toque o iOS dá zoom ao focar campos com fonte < 16px. Aqui todos passam a 16px. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea { font-size: 16px !important; }
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type="number"] { -moz-appearance: textfield; }

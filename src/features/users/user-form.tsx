@@ -44,7 +44,7 @@ export function UserForm() {
           <div className="mb-1.5 flex items-center justify-between">
             <label htmlFor="new-password" className="text-sm font-extrabold">Senha<span className="ml-0.5 text-crimson-ink">*</span></label>
             <button type="button" onClick={() => { setPassword(generatePassword()); setReveal(true); }}
-              className="flex items-center gap-1 text-xs font-bold text-crimson-ink hover:underline"><Dices size={14} />Gerar senha forte</button>
+              className="flex items-center gap-1 py-2 text-xs font-bold text-crimson-ink hover:underline"><Dices size={14} />Gerar senha forte</button>
           </div>
           <PasswordField id="new-password" value={password} onChange={(e) => setPassword(e.target.value)} reveal={reveal}
             required minLength={8} maxLength={128} autoComplete="new-password" />

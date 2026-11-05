@@ -16,7 +16,7 @@ export function ResponsibleForm({ onSaved, onCancel }: { onSaved: (r: Responsibl
   const [errors, setErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
-  const cpfOk = isValidCpf(cpf);
+  const cpfOk = !cpf || isValidCpf(cpf); // CPF é opcional; se informado, precisa ser válido
   const phoneOk = isValidPhone(phone);
   const cpfInvalid = cpfTouched && !cpfOk;
   const phoneInvalid = phoneTouched && !phoneOk;
@@ -26,7 +26,7 @@ export function ResponsibleForm({ onSaved, onCancel }: { onSaved: (r: Responsibl
     setCpfTouched(true); setPhoneTouched(true);
     if (!valid) return;
     setSaving(true); setErrors([]);
-    try { onSaved(await api.responsibles.create({ name: name.trim(), cpf, phone }), thenOrder); }
+    try { onSaved(await api.responsibles.create({ name: name.trim(), cpf: cpf || undefined, phone }), thenOrder); }
     catch (e) { setErrors(e instanceof ApiError ? e.messages : ["Não foi possível salvar o responsável"]); }
     finally { setSaving(false); }
   }
@@ -37,8 +37,8 @@ export function ResponsibleForm({ onSaved, onCancel }: { onSaved: (r: Responsibl
         <StepTitle n={1} title="Dados do responsável" subtitle="Pessoa da Zeut que acompanha o pedido do início à entrega." />
         <div className="grid gap-5 md:grid-cols-2">
           <Field label="Nome completo" required><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
-          <Field label="CPF" required error={cpfInvalid && "CPF inválido: os dígitos verificadores não conferem"}>
-            <Input value={cpf} inputMode="numeric" placeholder="000.000.000-00" onChange={(e) => setCpf(maskCpf(e.target.value))} onBlur={() => cpf && setCpfTouched(true)} invalid={cpfInvalid} valid={cpfOk} />
+          <Field label="CPF" hint="Opcional" error={cpfInvalid && "CPF inválido: os dígitos verificadores não conferem"}>
+            <Input value={cpf} inputMode="numeric" placeholder="000.000.000-00" onChange={(e) => setCpf(maskCpf(e.target.value))} onBlur={() => cpf && setCpfTouched(true)} invalid={cpfInvalid} valid={!!cpf && cpfOk} />
           </Field>
           <Field label="Telefone" required error={phoneInvalid && (phone ? "Telefone inválido: informe DDD + número" : "Campo obrigatório")} hint="Com DDD, ex.: (85) 99999-9999">
             <Input value={phone} inputMode="tel" placeholder="(00) 00000-0000" onChange={(e) => setPhone(maskPhone(e.target.value))} onBlur={() => setPhoneTouched(true)} invalid={phoneInvalid} valid={phoneOk} />
@@ -49,7 +49,7 @@ export function ResponsibleForm({ onSaved, onCancel }: { onSaved: (r: Responsibl
         <h2 className="mb-4 text-xl font-extrabold">Situação do cadastro</h2>
         <ul className="space-y-3">
           <ChecklistItem ok={!!name.trim()}>Nome</ChecklistItem>
-          <ChecklistItem ok={cpfOk}>CPF válido</ChecklistItem>
+          <ChecklistItem ok={cpfOk}>{cpf ? "CPF válido" : "CPF (opcional)"}</ChecklistItem>
           <ChecklistItem ok={phoneOk}>Telefone válido</ChecklistItem>
         </ul>
         <div className="mt-5 space-y-3 border-t border-line pt-5">

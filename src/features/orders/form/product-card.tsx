@@ -34,9 +34,9 @@ export function ProductCard({ item, mold, molds, grids, onChange, onRemove }: {
 
   return (
     <div className="overflow-hidden rounded-2xl border border-line bg-surface">
-      <div className="flex items-center gap-3 bg-cream-2 px-4 py-3.5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 bg-cream-2 px-3 py-3 sm:px-4 sm:py-3.5">
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-crimson-soft text-crimson-ink">{categoryIcon(mold.category, 18)}</span>
-        <button type="button" onClick={() => onChange({ open: !item.open })} aria-expanded={item.open} className="flex min-w-0 flex-1 flex-col items-start text-left">
+        <button type="button" onClick={() => onChange({ open: !item.open })} aria-expanded={item.open} className="flex min-w-[9rem] flex-1 flex-col items-start text-left">
           <span className="font-extrabold">{mold.name}</span>
           <span className="mt-1 flex flex-wrap gap-1.5">
             {[item.model, gridMode ? item.color : CATEGORY_LABEL[mold.category]].filter(Boolean).map((t) => (
@@ -45,9 +45,9 @@ export function ProductCard({ item, mold, molds, grids, onChange, onRemove }: {
             {origin && <span className="rounded-full bg-crimson-soft px-2.5 py-0.5 text-[11px] font-bold text-crimson-ink">Variação de {origin.name}</span>}
           </span>
         </button>
-        <span className="shrink-0 rounded-full bg-navy px-3 py-1 text-[11px] font-extrabold text-white">{pieces} {pieces === 1 ? "PEÇA" : "PEÇAS"}</span>
-        <button type="button" onClick={onRemove} aria-label={`Remover ${mold.name}`} className="p-1.5 text-muted hover:text-crimson-ink"><Trash2 size={18} /></button>
-        <button type="button" onClick={() => onChange({ open: !item.open })} aria-label="Expandir" className="p-1.5 text-muted"><ChevronDown size={18} className={cx("transition-transform", item.open && "rotate-180")} /></button>
+        <span className="ml-auto shrink-0 rounded-full bg-navy px-3 py-1 text-[11px] font-extrabold text-white">{pieces} {pieces === 1 ? "PEÇA" : "PEÇAS"}</span>
+        <button type="button" onClick={onRemove} aria-label={`Remover ${mold.name}`} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-muted hover:text-crimson-ink"><Trash2 size={18} /></button>
+        <button type="button" onClick={() => onChange({ open: !item.open })} aria-label="Expandir" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-muted"><ChevronDown size={18} className={cx("transition-transform", item.open && "rotate-180")} /></button>
       </div>
 
       {item.open && (
@@ -108,7 +108,7 @@ export function ProductCard({ item, mold, molds, grids, onChange, onRemove }: {
                       </div>
                       <div className="ml-auto flex items-center gap-3">
                         <div className="text-right"><div className="text-[11px] font-semibold text-muted">Subtotal</div><div className="font-extrabold">{subtotal(g.quantities)}</div></div>
-                        <button type="button" aria-label={`Remover grade ${def.name}`} onClick={() => onChange({ grids: item.grids.filter((x) => x.gridId !== g.gridId) })} className="p-1 text-muted hover:text-crimson-ink"><Trash2 size={16} /></button>
+                        <button type="button" aria-label={`Remover grade ${def.name}`} onClick={() => onChange({ grids: item.grids.filter((x) => x.gridId !== g.gridId) })} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-muted hover:text-crimson-ink"><Trash2 size={16} /></button>
                       </div>
                     </div>
                   );

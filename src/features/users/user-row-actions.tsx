@@ -10,7 +10,7 @@ import type { AppUser } from "@/lib/types";
 import { generatePassword } from "./generate-password";
 
 type Mode = null | "password" | "delete";
-const btn = "flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-xs font-bold hover:bg-navy-soft disabled:opacity-50";
+const btn = "flex items-center gap-1.5 rounded-lg border border-line px-3 py-2.5 text-xs font-bold hover:bg-navy-soft disabled:opacity-50";
 
 export function UserRowActions({ user, isSelf }: { user: AppUser; isSelf: boolean }) {
   const router = useRouter();
@@ -51,7 +51,7 @@ export function UserRowActions({ user, isSelf }: { user: AppUser; isSelf: boolea
           onConfirm={() => run(() => api.users.update(user.id, { password }), close)} onCancel={close}>
           <p className="mb-3">A pessoa entra com a nova senha a partir de agora. Anote antes de salvar: ela não será exibida de novo.</p>
           <PasswordField value={password} onChange={(e) => setPassword(e.target.value)} reveal={reveal} minLength={8} maxLength={128} autoComplete="new-password" placeholder="Nova senha (mín. 8 caracteres)" />
-          <button type="button" onClick={() => { setPassword(generatePassword()); setReveal(true); }} className="mt-2 text-xs font-bold text-crimson-ink hover:underline">Gerar senha forte</button>
+          <button type="button" onClick={() => { setPassword(generatePassword()); setReveal(true); }} className="mt-1 py-2 text-xs font-bold text-crimson-ink hover:underline">Gerar senha forte</button>
           {error && <p role="alert" className="mt-3 rounded-lg bg-crimson-soft p-3 text-sm font-bold text-crimson-ink">{error}</p>}
         </ConfirmDialog>
       )}

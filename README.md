@@ -99,6 +99,23 @@ domínio pela ponte `/backend/*` (por isso não há CORS nem a API precisa ser p
 - Quem protege os **dados** é a API (valida a assinatura do token a cada chamada); o `proxy.ts` só evita telas vazias.
 - **Variáveis**: nenhuma nova no front. `NEXT_PUBLIC_API_URL` continua valendo; `API_URL` (opcional, privada) tem prioridade no servidor.
 
+## Documentos (CPF/CNPJ)
+
+- **CPF é opcional**: no responsável e no cliente pessoa física. Se informado, precisa ser válido e único.
+- **CNPJ é obrigatório** para empresa e órgão público.
+- Pedido, detalhe e buscas funcionam com cadastros sem documento (as linhas de CPF simplesmente não aparecem).
+
+## Layout do celular
+
+Testado em 9 tamanhos (320×568 até tablet 768×1024, incluindo celular deitado) e nos temas claro e escuro, em 19 telas/estados
+(formulários, modais, diálogos). Regras que o projeto segue — mantenha ao mexer na interface:
+
+- Nada pode gerar rolagem horizontal; larguras mínimas só dentro de contêineres com rolagem própria.
+- Alvos de toque com pelo menos 40 px (ícones) / 36 px (botões de texto); campos de formulário com **16 px** em telas de toque
+  (abaixo disso o iPhone dá zoom ao focar) — regra global em `globals.css`.
+- Modais precisam caber em tela baixa (celular deitado): limitar a altura e rolar por dentro.
+- No cabeçalho, "Novo cadastro" vira só o ícone abaixo de 440 px e o texto da marca some abaixo de 400 px.
+
 ## Marca e PWA
 
 As logos originais ficam em `brand/` (não são publicadas). `npm run brand:build` gera tudo a partir delas: logo web (`public/brand/`),

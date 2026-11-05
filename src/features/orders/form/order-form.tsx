@@ -115,7 +115,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
           <StepTitle n={1} title="Vínculos" subtitle="Todo pedido precisa de um cliente e de um responsável." />
           <div className="space-y-5">
             <PersonPicker label="Nome do cliente" docLabel="CPF/CNPJ do cliente" value={clientId} onChange={setClientId}
-              people={clients.map((c) => ({ id: c.id, name: c.name, document: c.document, org: c.type !== "PF", hint: `${c.document.length === 14 ? "CNPJ" : "CPF"} ${formatDoc(c.document)} · ${c.type === "ORGAO" ? "Órgão público" : c.type === "PJ" ? "Empresa" : "Pessoa física"}` }))}
+              people={clients.map((c) => ({ id: c.id, name: c.name, document: c.document, org: c.type !== "PF", hint: `${c.document ? `${c.document.length === 14 ? "CNPJ" : "CPF"} ${formatDoc(c.document)} · ` : ""}${c.type === "ORGAO" ? "Órgão público" : c.type === "PJ" ? "Empresa" : "Pessoa física"}` }))}
               onCreate={() => router.push("/register")} createLabel="Cadastrar novo cliente" />
             {selectedClient && <ClientSummary client={selectedClient} />}
             <PersonPicker label="Nome do responsável" docLabel="CPF do responsável" value={responsibleId} onChange={setResponsibleId} allowCnpj={false}
@@ -184,7 +184,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
                   <Input key={i} value={l} icon={<Link2 size={17} />} aria-label={`Link ${i + 1}`} placeholder="Cole um link (arte, planilha…)" onChange={(e) => setLinks(links.map((x, j) => (j === i ? e.target.value : x)))} />
                 ))}
               </div>
-              <button type="button" onClick={() => setLinks([...links, ""])} className="mt-3 flex items-center gap-1.5 text-sm font-bold text-crimson-ink"><Plus size={16} />Adicionar outro link</button>
+              <button type="button" onClick={() => setLinks([...links, ""])} className="mt-1 flex items-center gap-1.5 py-2.5 text-sm font-bold text-crimson-ink"><Plus size={16} />Adicionar outro link</button>
             </div>
           </div>
         </Card>

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Field, Input } from "@/components/ui";
 import { formatDocument, isValidCnpj, isValidCpf, maskDocument, onlyDigits } from "@/lib/documents";
 
-export interface Person { id: string; name: string; document: string; hint?: string; org?: boolean }
+export interface Person { id: string; name: string; document?: string; hint?: string; org?: boolean }
 
 /**
  * Combobox de nome + campo de documento ligados entre si:
@@ -22,7 +22,7 @@ export function PersonPicker({ label, docLabel, people, value, onChange, onCreat
   const [docError, setDocError] = useState<string | null>(null);
 
   const name = selected ? selected.name : text;
-  const doc = selected ? formatDocument(selected.document) : docText;
+  const doc = selected ? formatDocument(selected.document ?? "") : docText;
   const q = name.toLowerCase();
   const matches = selected ? people : people.filter((p) => !q || p.name.toLowerCase().includes(q));
 
@@ -60,7 +60,7 @@ export function PersonPicker({ label, docLabel, people, value, onChange, onCreat
                   onClick={() => { onChange(p.id); setOpen(false); setDocError(null); }}
                   className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-navy-soft/70">
                   <span className="text-muted">{p.org ? <Building2 size={17} /> : <User size={17} />}</span>
-                  <span><span className="block text-sm font-extrabold">{p.name}</span><span className="block text-xs text-muted">{p.hint ?? formatDocument(p.document)}</span></span>
+                  <span><span className="block text-sm font-extrabold">{p.name}</span><span className="block text-xs text-muted">{p.hint ?? (p.document ? formatDocument(p.document) : "Sem CPF cadastrado")}</span></span>
                 </button>
               </li>
             ))}
@@ -73,8 +73,8 @@ export function PersonPicker({ label, docLabel, people, value, onChange, onCreat
           </ul>
         )}
       </div>
-      <Field label={docLabel} required error={docError} hint={selected ? <span className="font-semibold text-ok-ink">{selected.document.length === 14 ? "CNPJ válido" : "CPF válido"} · preenchido ao escolher. Alterar o documento troca a seleção.</span> : undefined}>
-        <Input value={doc} onChange={(e) => typeDoc(e.target.value)} inputMode="numeric" placeholder={allowCnpj ? "CPF ou CNPJ" : "000.000.000-00"} valid={!!selected} invalid={!!docError} />
+      <Field label={docLabel} error={docError} hint={selected ? (selected.document ? <span className="font-semibold text-ok-ink">{selected.document.length === 14 ? "CNPJ válido" : "CPF válido"} · preenchido ao escolher. Alterar o documento troca a seleção.</span> : "Sem documento cadastrado.") : "Opcional: ajuda a encontrar o cadastro."}>
+        <Input value={doc} onChange={(e) => typeDoc(e.target.value)} inputMode="numeric" placeholder={allowCnpj ? "CPF ou CNPJ" : "000.000.000-00"} valid={!!selected?.document} invalid={!!docError} />
       </Field>
     </div>
   );

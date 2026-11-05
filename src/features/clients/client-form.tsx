@@ -25,7 +25,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
 
   const isPf = type === "PF";
   const docLabel = isPf ? "CPF" : "CNPJ";
-  const docOk = isPf ? isValidCpf(doc) : isValidCnpj(doc);
+  const docOk = isPf ? !doc || isValidCpf(doc) : isValidCnpj(doc); // CPF é opcional; CNPJ é obrigatório
   const docInvalid = docTouched && !docOk;
   const hasContact = contacts.some((c) => c.value.trim());
   const ownersOk = contacts.every((c) => !c.notOwn || c.ownerName.trim());
@@ -54,7 +54,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
     try {
       const hasAddr = Object.entries(addr).some(([k, v]) => k !== "uf" && v.trim());
       const client = await api.clients.create({
-        type, name: name.trim(), document: doc,
+        type, name: name.trim(), document: doc || undefined,
         contacts: contacts.filter((c) => c.value.trim()).map((c) => ({
           kind: c.kind, value: c.value.trim(),
           ...(c.notOwn ? { ownerName: c.ownerName.trim(), ownerDocument: c.ownerDocument || undefined } : {}),
@@ -77,9 +77,9 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
             options={[{ value: "PF", label: "Pessoa física", icon: <User size={16} /> }, { value: "PJ", label: "Empresa (PJ)", icon: <Building2 size={16} /> }, { value: "ORGAO", label: "Órgão público", icon: <Building2 size={16} /> }]} />
           <div className="mt-6 grid gap-5 md:grid-cols-2">
             <Field label="Nome / Razão social" required><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
-            <Field label={docLabel} required error={docInvalid && `${docLabel} inválido: os dígitos verificadores não conferem`}>
+            <Field label={docLabel} required={!isPf} hint={isPf ? "Opcional" : undefined} error={docInvalid && `${docLabel} inválido: os dígitos verificadores não conferem`}>
               <Input value={doc} inputMode="numeric" onChange={(e) => setDoc(isPf ? maskCpf(e.target.value) : maskCnpj(e.target.value))} onBlur={() => doc && setDocTouched(true)}
-                invalid={docInvalid} valid={docOk} placeholder={isPf ? "000.000.000-00" : "00.000.000/0000-00"} />
+                invalid={docInvalid} valid={!!doc && docOk} placeholder={isPf ? "000.000.000-00" : "00.000.000/0000-00"} />
             </Field>
           </div>
         </Card>
@@ -91,7 +91,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
               <div key={i} className={i > 0 ? "border-t border-line pt-6" : ""}>
                 <div className="mb-1.5 flex items-center justify-between text-sm font-extrabold">
                   <span>Tipo de contato <span className="text-crimson-ink">*</span></span>
-                  {i > 0 && <button type="button" aria-label="Remover contato" onClick={() => setContacts(contacts.filter((_, j) => j !== i))} className="text-muted hover:text-crimson-ink"><X size={16} /></button>}
+                  {i > 0 && <button type="button" aria-label="Remover contato" onClick={() => setContacts(contacts.filter((_, j) => j !== i))} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-muted hover:text-crimson-ink"><X size={16} /></button>}
                 </div>
                 <Segmented<ContactKind> fill value={c.kind} onChange={(k) => setContact(i, { kind: k, value: "" })}
                   options={[{ value: "TELEFONE", label: "Telefone", icon: <Phone size={16} /> }, { value: "WHATSAPP", label: "WhatsApp", icon: <MessageCircle size={16} /> }, { value: "INSTAGRAM", label: "Instagram", icon: <AtSign size={16} /> }]} />
@@ -114,7 +114,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
               </div>
             ))}
           </div>
-          <button type="button" onClick={() => setContacts([...contacts, emptyContact()])} className="mt-6 flex items-center gap-1.5 text-sm font-bold text-crimson-ink"><Plus size={16} />Adicionar outra forma de contato</button>
+          <button type="button" onClick={() => setContacts([...contacts, emptyContact()])} className="mt-3 flex items-center gap-1.5 py-2.5 text-sm font-bold text-crimson-ink"><Plus size={16} />Adicionar outra forma de contato</button>
         </Card>
 
         <Card className="p-7">
@@ -123,7 +123,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
             <Field label="CEP" hint={cepMsg ?? "Preenche rua, bairro e cidade automaticamente"}>
               <div className="relative">
                 <Input value={addr.cep} inputMode="numeric" placeholder="00000-000" onChange={(e) => { const v = maskCep(e.target.value); setA({ cep: v }); if (onlyDigits(v).length === 8) void lookupCep(); }} className="pr-11" />
-                <button type="button" aria-label="Buscar CEP" onClick={lookupCep} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted"><Search size={17} /></button>
+                <button type="button" aria-label="Buscar CEP" onClick={lookupCep} className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center text-muted"><Search size={17} /></button>
               </div>
             </Field>
             <Field label="Rua / Logradouro"><Input value={addr.street} onChange={(e) => setA({ street: e.target.value })} placeholder="Rua, avenida…" /></Field>
@@ -145,7 +145,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
         <ul className="space-y-3">
           <ChecklistItem ok>Tipo de cliente</ChecklistItem>
           <ChecklistItem ok={!!name.trim()}>Nome / Razão social</ChecklistItem>
-          <ChecklistItem ok={docOk}>{docLabel} válido</ChecklistItem>
+          <ChecklistItem ok={docOk}>{isPf && !doc ? "CPF (opcional)" : `${docLabel} válido`}</ChecklistItem>
           <ChecklistItem ok={hasContact}>Forma de contato</ChecklistItem>
           {anyNotOwn && <ChecklistItem ok={ownersOk}>A quem pertence o contato</ChecklistItem>}
         </ul>
