@@ -2,7 +2,7 @@
 
 import { Link2, Plus, TriangleAlert, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Card, ChecklistItem, ConfirmDialog, cx, Field, Input, StepTitle, Textarea, PriorityBadge } from "@/components/ui";
 import { api, ApiError } from "@/lib/api-client";
 import { daysUntil, formatDate, piecesLabel } from "@/lib/format";
@@ -187,21 +187,14 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
                 <span>Arraste imagens ou <span className="font-bold text-crimson-ink">escolha arquivos</span></span>
                 <span className="text-xs text-muted">PNG, JPG ou WebP · até {MAX_IMAGES} fotos</span>
               </button>
-              {savedImages.length > 0 && (
-                <ul className="mt-2 flex flex-wrap gap-2">
+              {(savedImages.length > 0 || files.length > 0) && (
+                <ul className="mt-3 grid grid-cols-2 gap-3">
                   {savedImages.map((u) => (
-                    <li key={u} className="relative">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={u} alt="Imagem do pedido" className="h-16 w-16 rounded-lg border border-line object-cover" />
-                      <button type="button" aria-label="Remover imagem" onClick={() => setSavedImages(savedImages.filter((x) => x !== u))}
-                        className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-crimson text-white"><X size={13} /></button>
-                    </li>
+                    <PhotoPreview key={u} src={u} label="Já salva" onRemove={() => setSavedImages(savedImages.filter((x) => x !== u))} />
                   ))}
-                </ul>
-              )}
-              {files.length > 0 && (
-                <ul className="mt-2 space-y-1 text-xs font-semibold text-muted">
-                  {files.map((f, i) => <li key={i} className="flex items-center justify-between rounded-lg bg-cream-2 px-3 py-1.5">{f.name}<button type="button" aria-label="Remover" onClick={() => setFiles(files.filter((_, j) => j !== i))}><X size={14} /></button></li>)}
+                  {files.map((f, i) => (
+                    <PhotoPreview key={`${f.name}-${f.lastModified}-${i}`} file={f} onRemove={() => setFiles(files.filter((_, j) => j !== i))} />
+                  ))}
                 </ul>
               )}
             </div>
@@ -257,6 +250,36 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
           onSaved={(m) => { setAllMolds((l) => [...l, m]); setModal(false); addMold(m); }} />
       )}
     </div>
+  );
+}
+
+/** Pré-visualização de uma foto: arquivo recém-escolhido (ainda não enviado) ou foto já salva no pedido. */
+function PhotoPreview({ file, src, label, onRemove }: { file?: File; src?: string; label?: string; onRemove: () => void }) {
+  const [local, setLocal] = useState<string>();
+  useEffect(() => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setLocal(reader.result as string);
+    reader.readAsDataURL(file);
+    return () => reader.abort();
+  }, [file]);
+  const url = src ?? local;
+  const name = file?.name ?? label ?? "Foto";
+  return (
+    <li className="relative overflow-hidden rounded-xl border border-line bg-cream-2">
+      <div className="grid aspect-[4/3] place-items-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {url ? <img src={url} alt={`Pré-visualização: ${name}`} className="h-full w-full object-cover" /> : null}
+      </div>
+      <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 text-[11px] font-semibold text-muted">
+        <span className="min-w-0 truncate">{name}</span>
+        {file && <span className="shrink-0">{file.size < 1024 * 1024 ? `${Math.round(file.size / 1024)} KB` : `${(file.size / 1024 / 1024).toFixed(1)} MB`}</span>}
+      </div>
+      <button type="button" aria-label={`Remover ${name}`} onClick={onRemove}
+        className="absolute right-1.5 top-1.5 grid h-8 w-8 place-items-center rounded-full bg-navy-fixed/85 text-white shadow transition-colors hover:bg-crimson">
+        <X size={15} />
+      </button>
+    </li>
   );
 }
 
