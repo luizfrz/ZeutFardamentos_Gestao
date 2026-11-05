@@ -1,134 +1,189 @@
+<div align="center">
+
+<img src="public/brand/avatar-128.webp" alt="Zeut" width="96" height="96" />
+
 # Zeut · Gestão de Encomendas — Web
 
-Front-end em Next.js 16 (App Router, Cache Components) + Tailwind 4.
-A API fica em outro projeto: `../zeut_gestao_api` (NestJS + PostgreSQL).
+Front-end do sistema de gestão de encomendas de uniformes e confecções.
+Aplicação **Next.js 16 (App Router)** com renderização híbrida, autenticação por sessão em cookie `httpOnly`,
+upload de imagens para **Vercel Blob** e PWA instalável.
 
-## Rodar
+<img alt="Next.js" src="https://img.shields.io/badge/Next.js-16.4-000000?logo=nextdotjs&logoColor=white" />
+<img alt="React" src="https://img.shields.io/badge/React-19.3-149ECA?logo=react&logoColor=white" />
+<img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" />
+<img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white" />
+<img alt="Vercel" src="https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white" />
+<img alt="Vercel Blob" src="https://img.shields.io/badge/Storage-Vercel_Blob-000000?logo=vercel&logoColor=white" />
+<img alt="PWA" src="https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white" />
+<img alt="ESLint" src="https://img.shields.io/badge/ESLint-9-4B32C3?logo=eslint&logoColor=white" />
+<img alt="Node.js" src="https://img.shields.io/badge/Node.js-22-5FA04E?logo=nodedotjs&logoColor=white" />
+<img alt="NestJS API" src="https://img.shields.io/badge/API-NestJS_·_Prisma_·_PostgreSQL-E0234E?logo=nestjs&logoColor=white" />
 
-```bash
-# 1) API e banco (no projeto da API)
-cd ../zeut_gestao_api && npm install && docker compose up -d && npm run db:deploy && npm run start:dev
+</div>
 
-# 2) este projeto
-cp .env.example .env.local      # NEXT_PUBLIC_API_URL (padrão http://localhost:3333/api)
-npm install
-npm run dev                     # http://localhost:3000
+
+## 1. Visão geral
+
+| | |
+|---|---|
+| **Domínio** | Pedidos de uniformes: clientes (PF/PJ/órgão público), responsáveis, moldes e grades de tamanho, produção e entrega |
+| **Frontend** | Este repositório — Next.js 16, React 19, Tailwind CSS 4, TypeScript estrito |
+| **Backend** | Repositório separado `zeut_gestao_api` — NestJS 12, Prisma 7, PostgreSQL (Neon) |
+| **Infra** | Vercel (front e API como projetos distintos) · Neon (Postgres, `sa-east-1`) · Vercel Blob (imagens) |
+| **Acesso** | Fechado: todas as rotas exigem login. Não há cadastro público; administradores criam as contas |
+
+Funcionalidades: painel priorizado de encomendas, alerta de atrasos, cadastro de clientes/responsáveis, formulário de pedido
+com produtos por molde e grade de tamanhos, ciclo de vida do pedido, galeria de fotos, gestão de usuários com papéis,
+modo escuro e instalação como aplicativo (PWA).
+
+## Arquitetura
+
+```mermaid
+flowchart LR
+    B[Navegador]
+
+    subgraph Vercel_Front["Next.js (Vercel)"]
+        P[proxy.ts<br/>checagem de sessão]
+        RSC[Server Components<br/>api-server.ts]
+        BR["/backend/[...path]<br/>ponte + CSRF"]
+        UP["/upload<br/>Route Handler"]
+        SA[Server Actions<br/>login · logout]
+    end
+
+    API[(API NestJS<br/>Prisma · PostgreSQL)]
+    BLOB[(Vercel Blob<br/>imagens)]
+
+    B -->|requisição de página| P --> RSC -->|Bearer token| API
+    B -->|mutações em componentes de cliente| BR -->|Bearer token| API
+    B -->|foto já comprimida| UP -->|valida em /auth/me| API
+    UP -->|put| BLOB
+    B -->|formulário de login| SA -->|POST /auth/login| API
+    B -.->|exibe a foto direto do CDN| BLOB
 ```
 
-Scripts: `dev`, `build`, `start`, `lint`.
+**Decisões e motivos**
 
-## Telas
+| Decisão | Motivo |
+|---|---|
+| Token JWT em cookie `httpOnly` e ponte `/backend/*` | O JavaScript da página nunca lê o token (mitiga roubo por XSS) e o navegador só conversa com a própria origem, sem CORS |
+| Leitura de dados em **Server Components** dentro de `<Suspense>` | Menos JavaScript no cliente; o shell da página chega rápido e os dados fazem streaming |
+| `features/*` isoladas, `app/` só compõe | Cada funcionalidade é removível; rotas ficam finas e testáveis |
+| Compressão da imagem **no navegador** | Contorna o limite de ~4,5 MB do corpo de requisição da Vercel e reduz o armazenamento |
+| Regras de negócio duplicadas (prioridade, datas) só para **feedback ao vivo** | A API continua sendo a fonte da verdade e revalida tudo |
 
-- `/login` — entrar (página estática, sem cabeçalho do sistema). **Não há cadastro público.**
-- `/users` — administradores criam contas, redefinem senhas, mudam permissões e excluem contas
-- `/` Encomendas: resumo, filtros (prioridade/prazo/ciclo/ordenação), cards priorizados e entregues
-- `/register` (botão **Novo cadastro**): dados do cliente · aba Responsável (`?tab=responsible`)
-- `/orders/new` (botão **Cadastrar novo pedido**): escolhe o cliente, já mostra os dados dele, adiciona produtos (+ modal "Novo tipo de produto") e salva (`?client=<id>` / `?responsible=<id>` pré-selecionam)
-- `/orders/[id]` detalhe · `/orders/[id]/edit`
+## Autenticação e sessão
 
-## Estrutura
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as Navegador
+    participant X as Next.js
+    participant A as API
+
+    U->>X: GET /orders/123 (sem cookie)
+    X-->>U: 307 → /login (guarda a página pedida)
+    U->>X: Server Action: e-mail + senha
+    X->>A: POST /auth/login
+    A-->>X: JWT HS256 (7 dias)
+    X-->>U: Set-Cookie zeut_session (httpOnly, Secure, SameSite=Lax)
+    U->>X: GET /orders/123 (cookie)
+    X->>A: GET /orders/123 · Authorization: Bearer
+    A-->>X: dados
+    X-->>U: HTML (streaming)
+```
+
+- **Sessão**: JWT HS256 (`jose`) com `issuer=zeut-api` e `audience=zeut-web`, guardado em cookie `httpOnly` + `Secure` (produção) + `SameSite=Lax`.
+- **Papéis**: `USER` e `ADMIN`. O papel é conferido **no banco** a cada chamada, então rebaixar um usuário vale na hora para novas ações administrativas.
+- **Redirecionamento pós-login**: a rota pedida fica no cookie `zeut_next`; `safeNext()` aceita só caminhos internos (proteção contra *open redirect*).
+- **Token expirado ou inválido**: `/session-expired` (Route Handler) limpa o cookie e volta ao login.
+- **Força bruta**: a API limita 5 tentativas por 15 min por IP + e-mail.
+
+| Peça | Arquivo |
+|---|---|
+| Checagem otimista de sessão nas páginas | `src/proxy.ts` |
+| Cookie de sessão, leitura e expiração | `src/lib/session.ts`, `src/lib/token.ts` |
+| Cliente da API para Server Components (anexa o token) | `src/lib/api-server.ts` |
+| Cliente da API para componentes de cliente (via `/backend`) | `src/lib/api-client.ts` |
+| Ponte navegador → API, com checagem de `Origin` (CSRF) | `src/app/backend/[...path]/route.ts` |
+| Login, logout e navegação de administração | `src/features/auth/` |
+| Gestão de contas (somente `ADMIN`) | `src/features/users/` · `src/app/(app)/users/` |
+
+> O `proxy.ts` só lê o cookie para evitar telas vazias. Quem protege os **dados** é a API, que valida a assinatura do token a cada requisição.
+
+## Upload de imagens
+
+```mermaid
+flowchart LR
+    A[Escolher fotos<br/>PNG · JPG · WebP] --> B[Prévia em slide<br/>FileReader]
+    B -->|Salvar pedido| C[shrinkImage<br/>canvas → WebP]
+    C -->|FormData| D["POST /upload"]
+    D --> E{Sessão válida?<br/>GET /auth/me}
+    E -->|não| X1[401]
+    E -->|sim| F[put → Vercel Blob<br/>addRandomSuffix]
+    F --> G[URL pública]
+    G --> H["PATCH/POST pedido<br/>images: string[]"]
+    H --> I[API valida host<br/>*.public.blob.vercel-storage.com]
+```
+## Rotas
+
+| Rota | Tipo | Acesso | Descrição |
+|---|---|---|---|
+| `/login` | Estática | Pública | Entrada; sem cadastro público |
+| `/` | Dinâmica (PPR) | Logado | Resumo, alerta de atrasos, filtros e cards por prioridade, entregues |
+| `/register` | Dinâmica | Logado | Cadastro de cliente · aba Responsável (`?tab=responsible`) |
+| `/orders/new` | Dinâmica | Logado | Novo pedido (`?client=<id>` / `?responsible=<id>` pré-selecionam) |
+| `/orders/[id]` | Dinâmica | Logado | Detalhe, ciclo de vida, galeria de fotos |
+| `/orders/[id]/edit` | Dinâmica | Logado | Edição do pedido e das fotos |
+| `/users` | Dinâmica | `ADMIN` | Criar, redefinir senha, mudar papel e excluir contas |
+| `/offline` | Estática | Pública | Página do PWA sem conexão |
+| `/session-expired` | Route Handler | — | Limpa o cookie e volta ao login |
+| `/backend/[...path]` | Route Handler | Logado | Ponte para a API (bloqueia `auth/*`) |
+| `/upload` | Route Handler | Logado | Envio de foto para o Vercel Blob |
+
+##  Estrutura do projeto
 
 ```
 src/
-├── app/                      rotas finas (só composição + Suspense): register · orders/new · orders/[id] · orders/[id]/edit
+├── app/                      Rotas finas (composição + Suspense). Grupos: (app) logado · (auth) login
+│   ├── backend/[...path]/    ponte navegador → API
+│   ├── upload/               Route Handler do Vercel Blob
+│   ├── session-expired/      limpeza de sessão
+│   ├── manifest.ts · error.tsx · globals.css (tokens de tema)
 ├── components/
-│   ├── layout/               header
-│   └── ui/                   design system: button, card, badges, fields, steps, breadcrumb, confirm-dialog
-├── features/                 uma pasta por funcionalidade
+│   ├── layout/               header, navegação ativa, alternador de tema
+│   └── ui/                   design system: button, card, badges, fields, steps, breadcrumb,
+│                             back-button, confirm-dialog, toast
+├── features/                 uma pasta por funcionalidade (isoladas entre si)
+│   ├── auth/                 login, menu do usuário, navegação de admin
+│   ├── users/                gestão de contas
 │   ├── orders/
-│   │   ├── components/       listagem, cards, filtros, detalhe, ciclo de vida
-│   │   └── form/             formulário de pedido, produtos, seletor de pessoas, dados do cliente
-│   ├── clients/              formulário de cliente
-│   ├── responsibles/         formulário de responsável
-│   ├── molds/                catálogo de moldes: modal, categorias
-│   └── registration/         abas do /register (cliente · responsável)
-└── lib/                      api, types, format (datas/rótulos), documents (CPF/CNPJ/telefone), priority, cn
+│   │   ├── components/       listagem, cards, filtros, detalhe, ciclo de vida, galeria (lightbox)
+│   │   └── form/             formulário, produtos, seletor de pessoas, slide de upload
+│   ├── clients/ · responsibles/ · molds/ · registration/
+├── lib/                      api-core/server/client · session · token · image · format
+│                             documents (CPF/CNPJ/telefone) · priority · types · cn
+└── proxy.ts                  proteção das páginas
 ```
 
-Regras: `app/` não contém lógica; `features/*` importam de `components/ui` e `lib`, nunca de outra feature
-(exceção: `registration` compõe as demais); componentes de dados são Server Components dentro de `<Suspense>`.
 
-## Regras de negócio no front
+##  Design system, tema e PWA
 
-- **Prioridade** (espelha `src/common/priority.ts` da API): menos de 7 dias → URGENTE (≥ 50 peças) ou ALTA · 7–14 dias → MÉDIA · mais de 14 → BAIXA.
-- **Data de entrega**: classificada em tempo real (passada / hoje / P.E. 1–3); data passada exige confirmação antes de salvar.
-- **Responsável**: nome, CPF e telefone (com DDD) obrigatórios.
+**Tema.** As cores são *design tokens* em `src/app/globals.css`: `:root` é o tema claro e `[data-theme="dark"]` o escuro. O alternador segue o
+tema do sistema até haver escolha, que fica salva no aparelho. Use as classes semânticas (`bg-surface`, `text-ink`, `text-crimson-ink`, `text-ok-ink`…) e
+**não** cores fixas como `bg-white`.
 
-## Tema claro/escuro e PWA
+| Token | Valor (claro) | Origem |
+|---|---|---|
+| azul | `#0c1844` | logo |
+| carmim | `#c80036` | logo |
+| creme | `#fff5e1` | logo |
+| coral | `#ff6969` | logo |
 
-- **Modo escuro**: botão sol/lua no cabeçalho; segue o tema do sistema até haver uma escolha, que fica salva no aparelho.
-  Cores são tokens CSS em `src/app/globals.css` (`:root` = claro, `[data-theme="dark"]` = escuro) — para ajustar a paleta, edite só esse arquivo.
-  Use as classes semânticas (`bg-surface`, `text-ink`, `text-crimson-ink`, `text-ok-ink`…) e não cores fixas (`bg-white`).
-- **PWA** (`src/app/manifest.ts`, `public/sw.js`, `public/icons/`): instalável, com página offline. O Service Worker só é registrado em produção
-  e não guarda páginas nem dados da API, só arquivos estáticos.
+**Marca.** As logos originais ficam em `brand/` (não são publicadas). `npm run brand:build` (`scripts/generate-brand-assets.mjs`) gera a logo web,
+o avatar do cabeçalho, a arte do login, os ícones do PWA, o `apple-icon` e o favicon.
 
-## Deploy na Vercel
+**PWA.** `src/app/manifest.ts`, `public/sw.js` e `public/icons/`. Instalável (exige HTTPS, que a Vercel já fornece) e com página offline.
 
-O Next.js roda na Vercel sem configuração. Ordem recomendada: **API primeiro**, depois o front.
+**Feedback.** `ToastProvider` fica no layout da área logada e sobrevive à troca de página (ex.: salvar e navegar para o pedido).
+Sucesso some em 4,5 s e erro em 7 s; respeita `prefers-reduced-motion`.
 
-1. Publique a API (veja o README do projeto `zeut_gestao_api`) e copie a URL **real** dela (Vercel → projeto da API → *Domains*).
-   Confira antes: `https://SEU-PROJETO-API.vercel.app/api/health` deve responder `{"status":"ok"}`.
-2. *Add New → Project* → importe este repositório (preset *Next.js*, detectado sozinho).
-3. Variável de ambiente (Production **e** Preview): `NEXT_PUBLIC_API_URL` = `https://SEU-PROJETO-API.vercel.app/api`
-   — é lida **no build**, então mudar o valor exige novo deploy.
-4. Faça o deploy e copie a URL do front. Volte à API e coloque essa URL em `WEB_ORIGIN` (CORS); redeploy da API.
-5. O PWA só instala em HTTPS — a Vercel já entrega.
-
-> Com o login, só quem tem conta acessa os dados. Mantenha secreto o `JWT_SECRET` da API.
-
-## Login e sessão
-
-Todo o sistema exige login. Fluxo: `proxy.ts` manda quem não tem sessão para `/login` (lembrando a página pedida) →
-Server Action chama `POST /auth/login` da API → o token (JWT) fica em um cookie **httpOnly + Secure + SameSite=Lax** (7 dias).
-O JavaScript da página **nunca vê o token**: o servidor do site o anexa nas chamadas à API, e o navegador só fala com o próprio
-domínio pela ponte `/backend/*` (por isso não há CORS nem a API precisa ser pública para o navegador).
-
-| Peça | Onde |
-|---|---|
-| Proteção das páginas (checagem otimista do cookie) | `src/proxy.ts` |
-| Leitura/escrita do cookie de sessão | `src/lib/session.ts`, `src/lib/token.ts` |
-| API para Server Components (anexa o token) | `src/lib/api-server.ts` |
-| API para componentes de cliente (via `/backend`) | `src/lib/api-client.ts` |
-| Ponte navegador → API (com defesa de CSRF) | `src/app/backend/[...path]/route.ts` |
-| Telas e ações de login/sair | `src/features/auth/` |
-| Administração de usuários (só admin) | `src/features/users/`, `src/app/(app)/users/` |
-| Token expirado/inválido → limpa o cookie e volta ao login | `src/app/session-expired/route.ts` |
-
-- **Contas são criadas por administradores** (tela `/users`; botão "Gerar senha forte"). Papéis: `USER` (usa o sistema) e `ADMIN` (também gerencia contas).
-- **Primeiro administrador**: `yarn user:admin:neon` no projeto da API (lê `.env.admin`). Depois, entre e troque a senha em *Usuários*.
-- Quem protege os **dados** é a API (valida a assinatura do token a cada chamada); o `proxy.ts` só evita telas vazias.
-- **Variáveis**: nenhuma nova no front. `NEXT_PUBLIC_API_URL` continua valendo; `API_URL` (opcional, privada) tem prioridade no servidor.
-
-## Documentos (CPF/CNPJ)
-
-- **CPF é opcional**: no responsável e no cliente pessoa física. Se informado, precisa ser válido e único.
-- **CNPJ é obrigatório** para empresa e órgão público.
-- Pedido, detalhe e buscas funcionam com cadastros sem documento (as linhas de CPF simplesmente não aparecem).
-
-## Layout do celular
-
-Testado em 9 tamanhos (320×568 até tablet 768×1024, incluindo celular deitado) e nos temas claro e escuro, em 19 telas/estados
-(formulários, modais, diálogos). Regras que o projeto segue — mantenha ao mexer na interface:
-
-- Nada pode gerar rolagem horizontal; larguras mínimas só dentro de contêineres com rolagem própria.
-- Alvos de toque com pelo menos 40 px (ícones) / 36 px (botões de texto); campos de formulário com **16 px** em telas de toque
-  (abaixo disso o iPhone dá zoom ao focar) — regra global em `globals.css`.
-- Modais precisam caber em tela baixa (celular deitado): limitar a altura e rolar por dentro.
-- No cabeçalho, "Novo cadastro" vira só o ícone abaixo de 440 px e o texto da marca some abaixo de 400 px.
-
-## Marca e PWA
-
-As logos originais ficam em `brand/` (não são publicadas). `npm run brand:build` gera tudo a partir delas: logo web (`public/brand/`),
-avatar do cabeçalho, arte do login, ícones do PWA (`public/icons/`), `apple-icon` e favicon. As cores do tema são as da logo
-(azul `#0c1844`, carmim `#c80036`, creme `#fff5e1`, coral `#ff6969`) e estão em `src/app/globals.css`.
-
-## Quando a API está fora do ar
-
-As telas mostram "Não foi possível carregar os dados" com o botão **Tentar novamente** (`src/app/error.tsx`), mantendo o cabeçalho;
-os formulários mostram "Não foi possível conectar à API…". Veja a seção de solução de problemas no README da API.
-
-## Limitações conhecidas
-
-- Upload de imagens é só pré-visualização local (sem armazenamento).
-- Sessão sem revogação imediata: um usuário removido mantém o acesso até o token expirar (até 7 dias).
-- O limite de tentativas de login é por instância (serverless); para um limite global use o Vercel Firewall.
