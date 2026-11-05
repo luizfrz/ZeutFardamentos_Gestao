@@ -24,7 +24,10 @@ export async function POST(req: Request) {
     return json({ message: "Não foi possível conectar à API." }, 502);
   }
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return json({ message: "Armazenamento de imagens não configurado (BLOB_READ_WRITE_TOKEN)." }, 503);
+  // O bucket pode ter sido criado com prefixo (ex.: IMG → IMG_STORE_ID / IMG_READ_WRITE_TOKEN) ou com os nomes padrão da Vercel.
+  const storeId = process.env.IMG_STORE_ID ?? process.env.BLOB_STORE_ID;
+  const blobToken = process.env.IMG_READ_WRITE_TOKEN ?? process.env.BLOB_READ_WRITE_TOKEN;
+  if (!storeId && !blobToken) return json({ message: "Armazenamento de imagens não configurado (IMG_STORE_ID ou BLOB_READ_WRITE_TOKEN)." }, 503);
 
   const file = (await req.formData().catch(() => null))?.get("file");
   if (!(file instanceof File)) return json({ message: "Envie uma imagem." }, 400);
@@ -32,6 +35,6 @@ export async function POST(req: Request) {
   if (!ext) return json({ message: "Use uma imagem PNG, JPG ou WebP." }, 415);
   if (file.size > MAX_BYTES) return json({ message: "Imagem muito grande (máximo 4 MB)." }, 413);
 
-  const { url } = await put(`orders/photo.${ext}`, file, { access: "public", addRandomSuffix: true, contentType: file.type });
+  const { url } = await put(`orders/photo.${ext}`, file, { access: "public", addRandomSuffix: true, contentType: file.type, ...(blobToken ? { token: blobToken } : { storeId }) });
   return json({ url }, 201);
 }
