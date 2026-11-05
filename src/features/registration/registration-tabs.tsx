@@ -3,7 +3,7 @@
 import { Building2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { cx } from "@/components/ui";
+import { cx, useToast } from "@/components/ui";
 import { ClientForm } from "@/features/clients/client-form";
 import { ResponsibleForm } from "@/features/responsibles/responsible-form";
 
@@ -16,6 +16,7 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
 /** Mantém os dois formulários montados para não perder o que foi digitado ao trocar de aba. */
 export function RegistrationTabs({ initialTab }: { initialTab: Tab }) {
   const router = useRouter();
+  const toast = useToast();
   const [tab, setTab] = useState<Tab>(initialTab);
   const cancel = () => router.push("/");
 
@@ -32,10 +33,10 @@ export function RegistrationTabs({ initialTab }: { initialTab: Tab }) {
       </div>
 
       <div hidden={tab !== "client"}>
-        <ClientForm onCancel={cancel} onSaved={(c, thenOrder) => router.push(thenOrder ? `/orders/new?client=${c.id}` : "/")} />
+        <ClientForm onCancel={cancel} onSaved={(c, thenOrder) => { toast.success("Cliente cadastrado com sucesso", c.name); router.push(thenOrder ? `/orders/new?client=${c.id}` : "/"); }} />
       </div>
       <div hidden={tab !== "responsible"}>
-        <ResponsibleForm onCancel={cancel} onSaved={(r, thenOrder) => router.push(thenOrder ? `/orders/new?responsible=${r.id}` : "/")} />
+        <ResponsibleForm onCancel={cancel} onSaved={(r, thenOrder) => { toast.success("Responsável cadastrado com sucesso", r.name); router.push(thenOrder ? `/orders/new?responsible=${r.id}` : "/"); }} />
       </div>
     </>
   );

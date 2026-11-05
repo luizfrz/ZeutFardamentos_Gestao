@@ -3,13 +3,14 @@
 import { Check, Dices, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Button, Card, CardTitle, Field, Input, Select } from "@/components/ui";
+import { Button, Card, CardTitle, Field, Input, Select, useToast } from "@/components/ui";
 import { PasswordField } from "@/features/auth/password-field";
 import { api, ApiError } from "@/lib/api-client";
 import { generatePassword } from "./generate-password";
 
 export function UserForm() {
   const router = useRouter();
+  const toast = useToast();
   const [pending, start] = useTransition();
   const [password, setPassword] = useState("");
   const [reveal, setReveal] = useState(false);
@@ -27,6 +28,7 @@ export function UserForm() {
           name: String(fd.get("name")).trim(), email: String(fd.get("email")).trim(), password, role: fd.get("role") === "ADMIN" ? "ADMIN" : "USER",
         });
         form.reset(); setPassword(""); setReveal(false); setCreated(u.email);
+        toast.success("Conta criada com sucesso", u.email);
         router.refresh();
       } catch (err) {
         setErrors(err instanceof ApiError ? err.messages : ["Não foi possível criar a conta."]);

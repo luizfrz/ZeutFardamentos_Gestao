@@ -11,10 +11,18 @@ export function OrderCard({ order }: { order: Order }) {
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-surface p-4 pl-5 shadow-[0_1px_3px_rgba(11,20,69,.06)] transition-shadow hover:shadow-lg focus-visible:shadow-lg"
     >
       <span className={cx("absolute inset-y-0 left-0 w-1.5", PRIORITY_BAR[order.priority])} />
-      <div className="mb-4 grid h-[132px] place-items-center overflow-hidden rounded-xl border border-line bg-cream-2 text-slate">
+      <div className={cx("relative mb-4 grid h-[132px] place-items-center overflow-hidden rounded-xl bg-cream-2 text-slate", order.images[0] ? "border-2 border-crimson/50" : "border border-line")}>
         {order.images[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={order.images[0]} alt="" loading="lazy" className="h-full w-full object-cover" />
+          <>
+            {/* fundo: a própria foto desfocada; em cima, a foto inteira (sem cortar) */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={order.images[0]} alt="" aria-hidden loading="lazy" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-50 blur-xl" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={order.images[0]} alt="Foto do pedido" loading="lazy" className="absolute inset-0 h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" />
+            {order.images.length > 1 && (
+              <span className="absolute bottom-1.5 right-1.5 rounded-full bg-navy-fixed/80 px-2 py-0.5 text-[11px] font-extrabold text-white">+{order.images.length - 1}</span>
+            )}
+          </>
         ) : (
           <ImageIcon size={26} />
         )}

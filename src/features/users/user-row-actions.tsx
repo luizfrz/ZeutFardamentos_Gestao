@@ -3,7 +3,7 @@
 import { KeyRound, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ConfirmDialog } from "@/components/ui";
+import { ConfirmDialog, useToast } from "@/components/ui";
 import { PasswordField } from "@/features/auth/password-field";
 import { api, ApiError } from "@/lib/api-client";
 import type { AppUser } from "@/lib/types";
@@ -14,6 +14,7 @@ const btn = "flex items-center gap-1.5 rounded-lg border border-line px-3 py-2.5
 
 export function UserRowActions({ user, isSelf }: { user: AppUser; isSelf: boolean }) {
   const router = useRouter();
+  const toast = useToast();
   const [mode, setMode] = useState<Mode>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,14 +23,14 @@ export function UserRowActions({ user, isSelf }: { user: AppUser; isSelf: boolea
 
   const close = () => { setMode(null); setError(null); setPassword(""); setReveal(false); };
 
-  async function run(action: () => Promise<unknown>, done?: () => void) {
+  async function run(action: () => Promise<unknown>, success: string, done?: () => void) {
     setBusy(true); setError(null);
-    try { await action(); done?.(); router.refresh(); }
+    try { await action(); toast.success(success, user.email); done?.(); router.refresh(); }
     catch (e) { setError(e instanceof ApiError ? e.messages.join(" ") : "Não foi possível concluir."); }
     finally { setBusy(false); }
   }
 
-  const toggleRole = () => run(() => api.users.update(user.id, { role: user.role === "ADMIN" ? "USER" : "ADMIN" }));
+  const toggleRole = () => run(() => api.users.update(user.id, { role: user.role === "ADMIN" ? "USER" : "ADMIN" }), user.role === "ADMIN" ? "Agora é usuário comum" : "Agora é administrador");
 
   return (
     <>
@@ -48,7 +49,7 @@ export function UserRowActions({ user, isSelf }: { user: AppUser; isSelf: boolea
 
       {mode === "password" && (
         <ConfirmDialog title={`Redefinir senha de ${user.name}`} confirmLabel="Salvar nova senha" cancelLabel="Cancelar" busy={busy || password.length < 8}
-          onConfirm={() => run(() => api.users.update(user.id, { password }), close)} onCancel={close}>
+          onConfirm={() => run(() => api.users.update(user.id, { password }), "Senha redefinida com sucesso", close)} onCancel={close}>
           <p className="mb-3">A pessoa entra com a nova senha a partir de agora. Anote antes de salvar: ela não será exibida de novo.</p>
           <PasswordField value={password} onChange={(e) => setPassword(e.target.value)} reveal={reveal} minLength={8} maxLength={128} autoComplete="new-password" placeholder="Nova senha (mín. 8 caracteres)" />
           <button type="button" onClick={() => { setPassword(generatePassword()); setReveal(true); }} className="mt-1 py-2 text-xs font-bold text-crimson-ink hover:underline">Gerar senha forte</button>
@@ -57,7 +58,7 @@ export function UserRowActions({ user, isSelf }: { user: AppUser; isSelf: boolea
       )}
       {mode === "delete" && (
         <ConfirmDialog title={`Excluir a conta de ${user.name}?`} confirmLabel="Excluir conta" cancelLabel="Cancelar" busy={busy}
-          onConfirm={() => run(() => api.users.remove(user.id), close)} onCancel={close}>
+          onConfirm={() => run(() => api.users.remove(user.id), "Conta excluída", close)} onCancel={close}>
           <p>{user.email} perde o acesso ao sistema. Os pedidos e cadastros feitos por essa pessoa continuam salvos.</p>
           {error && <p role="alert" className="mt-3 rounded-lg bg-crimson-soft p-3 text-sm font-bold text-crimson-ink">{error}</p>}
         </ConfirmDialog>

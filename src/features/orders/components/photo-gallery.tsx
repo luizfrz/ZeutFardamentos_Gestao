@@ -21,7 +21,7 @@ export function PhotoGallery({ images, title }: { images: string[]; title: strin
           <li key={u}>
             <button type="button" aria-label={`Abrir foto ${i + 1} de ${images.length}`}
               onClick={(e) => { opener.current = e.currentTarget; setOpen(i); }}
-              className="group relative block aspect-square w-full overflow-hidden rounded-xl border border-line bg-cream-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crimson">
+              className="group relative block aspect-square w-full overflow-hidden rounded-xl border-2 border-crimson/50 bg-cream-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crimson">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={u} alt={`Foto ${i + 1} do pedido`} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
               {i === 0 && images.length > 1 && <span className="absolute bottom-2 right-2 rounded-full bg-navy-fixed/80 px-2 py-0.5 text-[11px] font-extrabold text-white">{images.length} fotos</span>}

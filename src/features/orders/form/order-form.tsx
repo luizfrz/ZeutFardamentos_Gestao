@@ -3,7 +3,7 @@
 import { Link2, Plus, TriangleAlert, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Button, Card, ChecklistItem, ConfirmDialog, cx, Field, Input, StepTitle, Textarea, PriorityBadge } from "@/components/ui";
+import { Button, Card, ChecklistItem, ConfirmDialog, cx, Field, Input, StepTitle, Textarea, PriorityBadge, useToast } from "@/components/ui";
 import { api, ApiError } from "@/lib/api-client";
 import { daysUntil, formatDate, piecesLabel } from "@/lib/format";
 import { uploadImage } from "@/lib/image";
@@ -32,6 +32,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   presetClientId?: string | null; presetResponsibleId?: string | null;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [allMolds, setAllMolds] = useState(molds);
   const [clientId, setClientId] = useState<string | null>(initial?.clientId ?? presetClientId ?? null);
   const [responsibleId, setResponsibleId] = useState<string | null>(initial?.responsibleId ?? presetResponsibleId ?? null);
@@ -98,6 +99,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
       uploaded = await Promise.all(files.map(uploadImage));
     } catch (e) {
       setErrors([e instanceof Error ? e.message : "Não foi possível enviar as imagens."]);
+      toast.error("Não foi possível enviar as fotos", "O pedido não foi salvo. Tente novamente.");
       setSaving(false);
       return;
     }
@@ -115,6 +117,8 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
     };
     try {
       const saved = initial ? await api.orders.update(initial.id, body) : await api.orders.create(body);
+      const fotos = uploaded.length ? `${uploaded.length} ${uploaded.length === 1 ? "foto enviada" : "fotos enviadas"} e salvas no pedido.` : undefined;
+      toast.success(initial ? "Pedido atualizado com sucesso" : "Pedido cadastrado com sucesso", fotos ?? saved.name);
       router.push(`/orders/${saved.id}`);
       router.refresh();
     } catch (e) {
@@ -266,7 +270,7 @@ function PhotoPreview({ file, src, label, onRemove }: { file?: File; src?: strin
   const url = src ?? local;
   const name = file?.name ?? label ?? "Foto";
   return (
-    <li className="relative overflow-hidden rounded-xl border border-line bg-cream-2">
+    <li className="relative overflow-hidden rounded-xl border-2 border-crimson/50 bg-cream-2">
       <div className="grid aspect-[4/3] place-items-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {url ? <img src={url} alt={`Pré-visualização: ${name}`} className="h-full w-full object-cover" /> : null}

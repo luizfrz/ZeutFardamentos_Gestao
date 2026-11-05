@@ -3,7 +3,7 @@
 import { Check, Pencil, Plus, TriangleAlert, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CATEGORY_LABEL, categoryIcon } from "./category";
-import { Button, Checkbox, cx, Field, Input, Segmented, Select } from "@/components/ui";
+import { Button, Checkbox, cx, Field, Input, Segmented, Select, useToast } from "@/components/ui";
 import { api, ApiError } from "@/lib/api-client";
 import type { Mold, MoldCategory, SizeGrid } from "@/lib/types";
 
@@ -16,6 +16,7 @@ const EXAMPLE: Record<MoldCategory, string> = {
 export function MoldModal({ molds, grids, onClose, onSaved }: {
   molds: Mold[]; grids: SizeGrid[]; onClose: () => void; onSaved: (m: Mold) => void;
 }) {
+  const toast = useToast();
   const [category, setCategory] = useState<MoldCategory>("BLUSA");
   const [name, setName] = useState("");
   const [models, setModels] = useState<string[]>(DEFAULT_MODELS);
@@ -56,6 +57,7 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
         ...(category === "BLUSA" ? { models, gridIds } : {}),
         ...(category === "OUTRO" ? { group: group.trim() || undefined, hasSizes } : {}),
       });
+      toast.success("Molde cadastrado com sucesso", mold.name);
       onSaved(mold);
     } catch (e) {
       setErrors(e instanceof ApiError ? e.messages : ["Não foi possível salvar o molde"]);

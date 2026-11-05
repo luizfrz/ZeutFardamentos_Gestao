@@ -2,7 +2,7 @@
 
 import { Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { ConfirmDialog } from "@/components/ui";
+import { ConfirmDialog, useToast } from "@/components/ui";
 import { api, ApiError } from "@/lib/api-client";
 import type { Mold, MoldCategory } from "@/lib/types";
 import { categoryIcon, CATEGORY_LABEL } from "@/features/molds/category";
@@ -14,6 +14,7 @@ const COLUMNS: { cat: MoldCategory; title: string }[] = [
 export function ProductPicker({ molds, inUseIds, onPick, onCreate, onDeleted }: {
   molds: Mold[]; inUseIds: string[]; onPick: (m: Mold) => void; onCreate: () => void; onDeleted: (id: string) => void;
 }) {
+  const toast = useToast();
   const [q, setQ] = useState("");
   const [toDelete, setToDelete] = useState<Mold | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -31,6 +32,7 @@ export function ProductPicker({ molds, inUseIds, onPick, onCreate, onDeleted }: 
     setDeleting(true); setDeleteError(null);
     try {
       await api.molds.remove(toDelete.id);
+      toast.success("Molde excluído", toDelete.name);
       onDeleted(toDelete.id);
       setToDelete(null);
     } catch (e) {
