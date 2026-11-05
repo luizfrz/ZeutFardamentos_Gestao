@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { Button, Card, ChecklistItem, ConfirmDialog, cx, Field, Input, StepTitle, Textarea, PriorityBadge } from "@/components/ui";
 import { api, ApiError } from "@/lib/api-client";
 import { daysUntil, formatDate, piecesLabel } from "@/lib/format";
+import { uploadImage } from "@/lib/image";
 import { classifyDeadline, computePriority } from "@/lib/priority";
 import type { Client, Mold, Order, Responsible, SizeGrid } from "@/lib/types";
 import { MoldModal } from "@/features/molds/mold-modal";
@@ -15,6 +16,7 @@ import { type DraftItem, itemPieces, ProductCard, usesGrid } from "./product-car
 import { ProductPicker } from "./product-picker";
 
 let seq = 0;
+const MAX_IMAGES = 8;
 const key = () => `i${++seq}`;
 const DEADLINE_TONE = { danger: "text-crimson-ink", warn: "text-crimson-ink", info: "text-muted", ok: "text-ok-ink" } as const;
 
@@ -41,6 +43,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   const [description, setDescription] = useState(initial?.description ?? "");
   const [links, setLinks] = useState<string[]>(initial?.links.length ? initial.links.map((l) => l.url) : [""]);
   const [files, setFiles] = useState<File[]>([]);
+  const [savedImages, setSavedImages] = useState<string[]>(initial?.images ?? []);
   const [picker, setPicker] = useState(false);
   const [modal, setModal] = useState(false);
   const [touched, setTouched] = useState(false);
@@ -48,6 +51,12 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   const [saving, setSaving] = useState(false);
   const [confirmPast, setConfirmPast] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  /** Aceita só imagens PNG/JPG/WebP e respeita o limite de fotos por pedido. */
+  function addFiles(list: File[]) {
+    const ok = list.filter((f) => /^image\/(png|jpeg|webp)$/.test(f.type));
+    setFiles((cur) => [...cur, ...ok].slice(0, Math.max(0, MAX_IMAGES - savedImages.length)));
+  }
 
   const moldOf = (id: string) => allMolds.find((m) => m.id === id);
   const patch = (k: string, p: Partial<DraftItem>) => setItems((xs) => xs.map((x) => (x.key === k ? { ...x, ...p } : x)));
@@ -84,6 +93,14 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   async function save(allowPastDate: boolean) {
     setConfirmPast(false);
     setSaving(true); setErrors([]);
+    let uploaded: string[];
+    try {
+      uploaded = await Promise.all(files.map(uploadImage));
+    } catch (e) {
+      setErrors([e instanceof Error ? e.message : "Não foi possível enviar as imagens."]);
+      setSaving(false);
+      return;
+    }
     const body = {
       name: name.trim(), description: description.trim() || undefined, clientId, responsibleId, deliveryDate: date,
       items: items.filter((it) => itemPieces(it, moldOf(it.moldId)) > 0).map((it) => {
@@ -93,7 +110,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
           : { moldId: it.moldId, color: it.color, quantity: it.quantity };
       }),
       links: links.map((l) => l.trim()).filter(Boolean).map((url) => ({ url: /^https?:\/\//.test(url) ? url : `https://${url}` })),
-      images: [],
+      images: [...savedImages, ...uploaded],
       ...(allowPastDate ? { allowPastDate: true } : {}),
     };
     try {
@@ -162,18 +179,29 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
           <div className="mt-5 grid gap-5 md:grid-cols-2">
             <div>
               <div className="mb-1.5 text-sm font-extrabold">Imagens</div>
-              <input ref={fileRef} type="file" accept="image/png,image/jpeg" multiple hidden onChange={(e) => setFiles([...files, ...Array.from(e.target.files ?? [])].filter((f) => f.size <= 10 * 2 ** 20))} />
+              <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onChange={(e) => { addFiles(Array.from(e.target.files ?? [])); e.target.value = ""; }} />
               <button type="button" onClick={() => fileRef.current?.click()}
-                onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); setFiles([...files, ...Array.from(e.dataTransfer.files).filter((f) => /^image\/(png|jpeg)$/.test(f.type))]); }}
+                onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); addFiles(Array.from(e.dataTransfer.files)); }}
                 className="flex h-36 w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-crimson/60 bg-crimson-soft/40 text-sm">
                 <Upload size={22} className="text-muted" />
                 <span>Arraste imagens ou <span className="font-bold text-crimson-ink">escolha arquivos</span></span>
-                <span className="text-xs text-muted">PNG ou JPG, até 10 MB</span>
+                <span className="text-xs text-muted">PNG, JPG ou WebP · até {MAX_IMAGES} fotos</span>
               </button>
+              {savedImages.length > 0 && (
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {savedImages.map((u) => (
+                    <li key={u} className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={u} alt="Imagem do pedido" className="h-16 w-16 rounded-lg border border-line object-cover" />
+                      <button type="button" aria-label="Remover imagem" onClick={() => setSavedImages(savedImages.filter((x) => x !== u))}
+                        className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-crimson text-white"><X size={13} /></button>
+                    </li>
+                  ))}
+                </ul>
+              )}
               {files.length > 0 && (
                 <ul className="mt-2 space-y-1 text-xs font-semibold text-muted">
                   {files.map((f, i) => <li key={i} className="flex items-center justify-between rounded-lg bg-cream-2 px-3 py-1.5">{f.name}<button type="button" aria-label="Remover" onClick={() => setFiles(files.filter((_, j) => j !== i))}><X size={14} /></button></li>)}
-                  <li className="text-[11px] italic">Pré-visualização local — o envio de imagens ao servidor ainda não está ativo.</li>
                 </ul>
               )}
             </div>

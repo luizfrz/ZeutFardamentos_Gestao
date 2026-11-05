@@ -35,9 +35,23 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
         <div className="min-w-0 space-y-6">
           <Card className="p-6">
             <CardTitle icon={<ImageIcon size={20} />}>Imagens</CardTitle>
-            <div className="mt-5 grid h-72 place-items-center rounded-xl border border-line bg-cream-2 text-center text-sm font-semibold text-muted">
-              <div><ImageIcon size={32} className="mx-auto mb-2 text-slate" />Nenhuma imagem anexada</div>
-            </div>
+            {order.images.length ? (
+              <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {order.images.map((u, i) => (
+                  <li key={u}>
+                    <a href={u} target="_blank" rel="noopener noreferrer" aria-label={`Abrir imagem ${i + 1} em tamanho real`}
+                      className="block overflow-hidden rounded-xl border border-line bg-cream-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={u} alt={`Imagem ${i + 1} do pedido`} loading="lazy" className="aspect-square w-full object-cover transition-transform hover:scale-[1.03]" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="mt-5 grid h-72 place-items-center rounded-xl border border-line bg-cream-2 text-center text-sm font-semibold text-muted">
+                <div><ImageIcon size={32} className="mx-auto mb-2 text-slate" />Nenhuma imagem anexada</div>
+              </div>
+            )}
           </Card>
 
           {order.description && (
