@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { ThemeToggle } from "./theme-toggle";
 
-export function Header({ userMenu }: { userMenu?: ReactNode }) {
+export function Header({ userMenu, adminNav }: { userMenu?: ReactNode; adminNav?: ReactNode }) {
   const router = useRouter();
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
@@ -27,6 +27,7 @@ export function Header({ userMenu }: { userMenu?: ReactNode }) {
             <span className="block truncate text-xs text-white/80">Fardamentos e Confecções</span>
           </span>
         </Link>
+        {adminNav}
 
         <form onSubmit={submit} role="search" className="order-last flex min-w-0 basis-full items-center gap-3 rounded-full bg-surface px-4 py-1 text-ink md:order-none md:basis-0 md:flex-1">
           <Search size={18} className="shrink-0 text-muted" />
@@ -41,7 +42,7 @@ export function Header({ userMenu }: { userMenu?: ReactNode }) {
         {userMenu}
 
         <Link href="/register" aria-label="Novo cadastro" title="Novo cadastro"
-          className="flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-crimson text-[15px] font-bold hover:bg-crimson-dark sm:h-11 sm:w-11 min-[440px]:w-auto min-[440px]:px-5">
+          className="flex h-10 w-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-crimson text-[15px] font-bold transition-colors hover:bg-crimson-dark sm:h-11 min-[440px]:w-auto min-[440px]:px-5">
           <Plus size={18} /><span className="hidden min-[440px]:inline">Novo cadastro</span>
         </Link>
       </div>

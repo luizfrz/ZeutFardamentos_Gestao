@@ -16,7 +16,7 @@ export async function UserMenu() {
       </span>
       {user.role === "ADMIN" && (
         <Link href="/users" aria-label="Gerenciar usuários" title="Usuários"
-          className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white transition-colors hover:bg-white/20 sm:h-11 sm:w-11">
+          className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white transition-colors hover:bg-white/20 sm:h-11 sm:w-11 md:hidden">
           <Users size={18} />
         </Link>
       )}
