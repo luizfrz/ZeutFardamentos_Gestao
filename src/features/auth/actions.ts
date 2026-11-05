@@ -23,7 +23,7 @@ async function finish(res: AuthResponse): Promise<never> {
 
 function failure(e: unknown, values: AuthState["values"]): AuthState {
   if (e instanceof ApiError) return e.messages.length > 1 ? { errors: e.messages, values } : { error: e.messages[0], values };
-  throw e; // redirect() e erros inesperados seguem o fluxo normal do Next
+  throw e; 
 }
 
 export async function loginAction(_prev: AuthState, formData: FormData): Promise<AuthState> {

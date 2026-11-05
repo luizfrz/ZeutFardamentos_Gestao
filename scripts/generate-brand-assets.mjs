@@ -1,11 +1,10 @@
 // Gera todos os arquivos de marca (web, PWA, favicon) a partir das logos originais em /brand.
-// Uso: npm run brand:build   (requer o pacote "sharp")
 import sharp from "sharp";
 import { mkdirSync } from "node:fs";
 
 const BRAND = { navy: "#0c1844", crimson: "#c80036", cream: "#fff5e1", coral: "#ff6969" };
-const FULL = "brand/zeut-logo-completa.png"; // marca completa, fundo transparente
-const AVATAR = "brand/zeut-avatar.png"; //      perfil quadrado, fundo creme
+const FULL = "brand/zeut-logo-completa.png"; 
+const AVATAR = "brand/zeut-avatar.png"; 
 mkdirSync("public/brand", { recursive: true });
 mkdirSync("public/icons", { recursive: true });
 
@@ -29,6 +28,7 @@ o = await sharp(AVATAR).resize(192, 192).flatten({ background: BRAND.cream }).pn
 log("public/icons/icon-192.png", o.size);
 o = await sharp(AVATAR).resize(512, 512).flatten({ background: BRAND.cream }).png(png).toFile("public/icons/icon-512.png");
 log("public/icons/icon-512.png", o.size);
+
 // maskable: o sistema recorta até ~20% das bordas, então a arte fica a 78% do tamanho sobre fundo creme
 const inner = await sharp(AVATAR).resize(400, 400).png().toBuffer();
 o = await sharp({ create: { width: 512, height: 512, channels: 3, background: BRAND.cream } })

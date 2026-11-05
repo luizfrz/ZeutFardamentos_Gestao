@@ -7,10 +7,7 @@ const TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png",
 
 const json = (body: unknown, status: number) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 
-/**
- * Recebe uma foto do pedido e a guarda no Vercel Blob (bucket público; o endereço é imprevisível).
- * Só quem está logado envia: o token é validado de verdade pela API (`/auth/me`), não só lido do cookie.
- */
+
 export async function POST(req: Request) {
   const origin = req.headers.get("origin");
   if (origin && new URL(origin).host !== req.headers.get("host")) return json({ message: "Origem não permitida." }, 403);
@@ -24,7 +21,6 @@ export async function POST(req: Request) {
     return json({ message: "Não foi possível conectar à API." }, 502);
   }
 
-  // O bucket pode ter sido criado com prefixo (ex.: IMG → IMG_STORE_ID / IMG_READ_WRITE_TOKEN) ou com os nomes padrão da Vercel.
   const storeId = process.env.IMG_STORE_ID ?? process.env.BLOB_STORE_ID;
   const blobToken = process.env.IMG_READ_WRITE_TOKEN ?? process.env.BLOB_READ_WRITE_TOKEN;
   if (!storeId && !blobToken) return json({ message: "Armazenamento de imagens não configurado (IMG_STORE_ID ou BLOB_READ_WRITE_TOKEN)." }, 503);
