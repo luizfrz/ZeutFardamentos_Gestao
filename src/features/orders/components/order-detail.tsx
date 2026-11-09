@@ -4,6 +4,8 @@ import { Breadcrumb, Card, CardTitle, cx, PriorityBadge, StatusBadge } from "@/c
 import { api, ApiError } from "@/lib/api-server";
 import { CLIENT_TYPE_LABEL, dayOfMonth, formatDate, formatWeekday, monthAbbr } from "@/lib/format";
 import { formatDocument } from "@/lib/documents";
+import { AddressEditor } from "@/features/clients/address-editor";
+import { Payments } from "./payments";
 import { Lifecycle } from "./lifecycle";
 import { PhotoGallery } from "./photo-gallery";
 import { OrderActions } from "./order-actions";
@@ -81,6 +83,8 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
             <Lifecycle status={order.status} />
           </Card>
 
+          <Payments order={order} />
+
           <Card className="p-6">
             <CardTitle icon={<Building2 size={20} />}>Cliente</CardTitle>
             {client && (
@@ -95,6 +99,7 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
                     <div className="font-extrabold">{formatDocument(client.document)}</div>
                   </>
                 )}
+                <AddressEditor clientId={client.id} address={client.address} />
                 {client.contacts.map((c) => (
                   <div key={c.kind + c.value} className="mt-4 flex items-center gap-3 rounded-xl border border-line bg-cream-2 p-3">
                     {c.kind === "TELEFONE" ? <Phone size={17} /> : <MessageCircle size={17} />}

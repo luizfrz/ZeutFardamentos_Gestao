@@ -34,10 +34,13 @@ export function createApi(request: RequestFn) {
       get: (id: string) => request<Order>(`/orders/${id}`),
       create: (body: unknown) => request<Order>("/orders", { method: "POST", body: JSON.stringify(body) }),
       update: (id: string, body: unknown) => request<Order>(`/orders/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+      addPayment: (id: string, body: { amount: number; paidAt?: string }) => request<Order>(`/orders/${id}/payments`, { method: "POST", body: JSON.stringify(body) }),
+      removePayment: (id: string, paymentId: string) => request<Order>(`/orders/${id}/payments/${paymentId}`, { method: "DELETE" }),
       setStatus: (id: string, status: OrderStatus) =>
         request<Order>(`/orders/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),
     },
     clients: {
+      setAddress: (id: string, address?: unknown) => request<Client>(`/clients/${id}/address`, { method: "PATCH", body: JSON.stringify({ address }) }),
       list: (q?: string) => request<Client[]>(`/clients${qs({ q })}`),
       create: (body: unknown) => request<Client>("/clients", { method: "POST", body: JSON.stringify(body) }),
     },

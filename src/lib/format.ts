@@ -21,3 +21,13 @@ export const daysUntil = (iso: string, today = new Date()) => {
 export const daysLabel = (n: number) =>
   n < 0 ? `atrasado ${Math.abs(n)} ${Math.abs(n) === 1 ? "dia" : "dias"}` : n === 0 ? "entrega hoje" : `faltam ${n} ${n === 1 ? "dia" : "dias"}`;
 export const piecesLabel = (n: number) => `${n} ${n === 1 ? "peça" : "peças"}`;
+
+/** Dinheiro trafega em centavos. */
+export const formatBRL = (cents: number) => (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+/** Máscara de campo: só dígitos, lidos como centavos ("123450" → "1.234,50"). */
+export const maskBRL = (s: string) => {
+  const d = s.replace(/\D/g, "").replace(/^0+/, "");
+  return d ? (Number(d) / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 }) : "";
+};
+/** Valor mascarado → centavos; vazio → undefined. */
+export const parseBRL = (s: string) => Number(s.replace(/\D/g, "")) || undefined;

@@ -1,15 +1,15 @@
 "use client";
 
-import { Building2, Check, AtSign, MessageCircle, Package, Phone, Plus, Search, TriangleAlert, User, X } from "lucide-react";
+import { Building2, Check, AtSign, MessageCircle, Package, Phone, Plus, TriangleAlert, User, X } from "lucide-react";
 import { useState } from "react";
-import { Button, Card, Checkbox, ChecklistItem, Field, Input, Segmented, Select, StepTitle } from "@/components/ui";
+import { Button, Card, Checkbox, ChecklistItem, Field, Input, Segmented, StepTitle } from "@/components/ui";
 import { api, ApiError } from "@/lib/api-client";
-import { isValidCnpj, isValidCpf, maskCep, maskCnpj, maskCpf, maskDocument, maskPhone, onlyDigits } from "@/lib/documents";
+import { isValidCnpj, isValidCpf, maskCnpj, maskCpf, maskDocument, maskPhone } from "@/lib/documents";
+import { AddressFields, emptyAddress, hasAddress } from "./address-fields";
 import type { Client, ClientType, ContactKind } from "@/lib/types";
 
 interface DraftContact { kind: ContactKind; value: string; notOwn: boolean; ownerName: string; ownerDocument: string }
 const emptyContact = (): DraftContact => ({ kind: "WHATSAPP", value: "", notOwn: false, ownerName: "", ownerDocument: "" });
-const UFS = "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split(" ");
 const KIND_LABEL: Record<ContactKind, string> = { TELEFONE: "Telefone", WHATSAPP: "WhatsApp", INSTAGRAM: "Instagram" };
 
 export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrder: boolean) => void; onCancel: () => void }) {
@@ -18,8 +18,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
   const [doc, setDoc] = useState("");
   const [docTouched, setDocTouched] = useState(false);
   const [contacts, setContacts] = useState<DraftContact[]>([emptyContact()]);
-  const [addr, setAddr] = useState({ cep: "", street: "", number: "", complement: "", district: "", city: "", uf: "CE" });
-  const [cepMsg, setCepMsg] = useState<string | null>(null);
+  const [addr, setAddr] = useState(emptyAddress());
   const [errors, setErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -33,33 +32,19 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
   const valid = !!name.trim() && docOk && hasContact && ownersOk;
 
   const setContact = (i: number, p: Partial<DraftContact>) => setContacts((cs) => cs.map((c, j) => (j === i ? { ...c, ...p } : c)));
-  const setA = (p: Partial<typeof addr>) => setAddr((a) => ({ ...a, ...p }));
-
-  async function lookupCep() {
-    const d = onlyDigits(addr.cep);
-    if (d.length !== 8) return setCepMsg("Informe os 8 dígitos do CEP");
-    setCepMsg("Buscando…");
-    try {
-      const r = await (await fetch(`https://viacep.com.br/ws/${d}/json/`)).json();
-      if (r.erro) return setCepMsg("CEP não encontrado");
-      setA({ street: r.logradouro ?? "", district: r.bairro ?? "", city: r.localidade ?? "", uf: r.uf ?? addr.uf });
-      setCepMsg(null);
-    } catch { setCepMsg("Não foi possível consultar o CEP"); }
-  }
 
   async function save(thenOrder: boolean) {
     setDocTouched(true);
     if (!valid) return;
     setSaving(true); setErrors([]);
     try {
-      const hasAddr = Object.entries(addr).some(([k, v]) => k !== "uf" && v.trim());
       const client = await api.clients.create({
         type, name: name.trim(), document: doc || undefined,
         contacts: contacts.filter((c) => c.value.trim()).map((c) => ({
           kind: c.kind, value: c.value.trim(),
           ...(c.notOwn ? { ownerName: c.ownerName.trim(), ownerDocument: c.ownerDocument || undefined } : {}),
         })),
-        address: hasAddr ? addr : undefined,
+        address: hasAddress(addr) ? addr : undefined,
       });
       onSaved(client, thenOrder);
     } catch (e) {
@@ -119,24 +104,7 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
 
         <Card className="p-7">
           <StepTitle n={3} title="Endereço" subtitle="Opcional" />
-          <div className="grid gap-5 md:grid-cols-2">
-            <Field label="CEP" hint={cepMsg ?? "Preenche rua, bairro e cidade automaticamente"}>
-              <div className="relative">
-                <Input value={addr.cep} inputMode="numeric" placeholder="00000-000" onChange={(e) => { const v = maskCep(e.target.value); setA({ cep: v }); if (onlyDigits(v).length === 8) void lookupCep(); }} className="pr-11" />
-                <button type="button" aria-label="Buscar CEP" onClick={lookupCep} className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center text-muted"><Search size={17} /></button>
-              </div>
-            </Field>
-            <Field label="Rua / Logradouro"><Input value={addr.street} onChange={(e) => setA({ street: e.target.value })} placeholder="Rua, avenida…" /></Field>
-          </div>
-          <div className="mt-5 grid gap-5 md:grid-cols-3">
-            <Field label="Número"><Input value={addr.number} onChange={(e) => setA({ number: e.target.value })} placeholder="Nº" /></Field>
-            <Field label="Complemento"><Input value={addr.complement} onChange={(e) => setA({ complement: e.target.value })} placeholder="Apto, sala…" /></Field>
-            <Field label="Bairro"><Input value={addr.district} onChange={(e) => setA({ district: e.target.value })} placeholder="Bairro" /></Field>
-          </div>
-          <div className="mt-5 grid gap-5 md:grid-cols-2">
-            <Field label="Cidade"><Input value={addr.city} onChange={(e) => setA({ city: e.target.value })} placeholder="Cidade" /></Field>
-            <Field label="UF"><Select value={addr.uf} onChange={(e) => setA({ uf: e.target.value })}>{UFS.map((u) => <option key={u}>{u}</option>)}</Select></Field>
-          </div>
+          <AddressFields addr={addr} onChange={setAddr} />
         </Card>
       </div>
 

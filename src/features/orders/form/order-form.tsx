@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Button, Card, ChecklistItem, ConfirmDialog, cx, Field, Input, StepTitle, Textarea, PriorityBadge, useToast } from "@/components/ui";
 import { api, ApiError } from "@/lib/api-client";
-import { daysUntil, formatDate, piecesLabel } from "@/lib/format";
+import { daysUntil, formatBRL, formatDate, maskBRL, parseBRL, piecesLabel } from "@/lib/format";
 import { uploadImage } from "@/lib/image";
 import { classifyDeadline, computePriority } from "@/lib/priority";
 import type { Client, Mold, Order, Responsible, SizeGrid } from "@/lib/types";
@@ -42,6 +42,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   const [items, setItems] = useState<DraftItem[]>(() => initial?.items.map(toDraft) ?? []);
   const [name, setName] = useState(initial?.name ?? "");
   const [date, setDate] = useState(initial?.deliveryDate ?? "");
+  const [totalValue, setTotalValue] = useState(maskBRL(String(initial?.totalValue ?? "")));
   const [description, setDescription] = useState(initial?.description ?? "");
   const [links, setLinks] = useState<string[]>(initial?.links.length ? initial.links.map((l) => l.url) : [""]);
   const [files, setFiles] = useState<File[]>([]);
@@ -105,7 +106,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
       return;
     }
     const body = {
-      name: name.trim(), description: description.trim() || undefined, clientId, responsibleId, deliveryDate: date,
+      name: name.trim(), description: description.trim() || undefined, clientId, responsibleId, deliveryDate: date, totalValue: parseBRL(totalValue),
       items: items.filter((it) => itemPieces(it, moldOf(it.moldId)) > 0).map((it) => {
         const m = moldOf(it.moldId);
         return usesGrid(m)
@@ -178,6 +179,9 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
               <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} invalid={!!deadline?.past} />
             </Field>
           </div>
+          <Field label="Valor total do pedido (R$)" hint={initial && initial.paidTotal > 0 ? `Já pago: ${formatBRL(initial.paidTotal)}` : "Opcional. Permite registrar pagamentos."} className="mt-5 md:w-1/2">
+            <Input value={totalValue} inputMode="numeric" placeholder="0,00" onChange={(e) => setTotalValue(maskBRL(e.target.value))} />
+          </Field>
           <Field label="Descrição" hint="Opcional" className="mt-5">
             <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Detalhes do modelo, tecido, cores, bordados, acabamento…" />
           </Field>
