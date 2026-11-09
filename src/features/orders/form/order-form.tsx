@@ -75,7 +75,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
 
   const total = items.reduce((s, it) => s + itemPieces(it, moldOf(it.moldId)), 0);
   const daysLeft = date ? daysUntil(date) : null;
-  const priority = daysLeft === null ? null : computePriority(daysLeft, total);
+  const priority = daysLeft === null ? null : computePriority(daysLeft);
   const deadline = daysLeft === null ? null : classifyDeadline(daysLeft);
   // Em edição, uma data passada que não foi alterada não precisa de nova confirmação.
   const needsPastConfirm = !!deadline?.past && !(initial && date === initial.deliveryDate);

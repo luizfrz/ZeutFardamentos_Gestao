@@ -1,4 +1,3 @@
-import { AlertTriangle } from "lucide-react";
 import { Card } from "@/components/ui";
 import { api } from "@/lib/api-server";
 import { OrderCard } from "./order-card";
@@ -18,9 +17,6 @@ export async function PendingOrders({ searchParams }: { searchParams: Promise<Re
           Encomendas pendentes
           <span className="grid h-6 min-w-6 place-items-center rounded-full bg-navy px-2 text-xs font-extrabold text-white">{orders.length}</span>
         </h2>
-        <p className="flex items-center gap-2 text-sm font-semibold text-muted">
-          <AlertTriangle size={15} />Prioridade = prazo de entrega + quantidade de peças. Clique no card para ver o pedido.
-        </p>
       </div>
       {orders.length === 0 ? (
         <Card className="p-10 text-center font-semibold text-muted">

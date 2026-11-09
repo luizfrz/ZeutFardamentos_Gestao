@@ -5,7 +5,7 @@ import { OverdueAlert } from "@/features/orders/components/overdue-alert";
 import { Filters } from "@/features/orders/components/filters";
 import { OrdersSkeleton, PendingOrders } from "@/features/orders/components/pending-orders";
 import { SummaryCards } from "@/features/orders/components/summary-cards";
-import { LiveClock, SortNote, TodayLabel } from "@/features/orders/components/today-label";
+import { TodayLabel } from "@/features/orders/components/today-label";
 import { ButtonLink } from "@/components/ui";
 
 export default function HomePage({ searchParams }: PageProps<"/">) {
@@ -16,8 +16,6 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
           <h1 className="text-4xl font-extrabold tracking-tight">Encomendas</h1>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <TodayLabel />
-            <LiveClock />
-            <SortNote />
           </div>
         </div>
         <ButtonLink href="/orders/new"><Plus size={18} />Cadastrar novo pedido</ButtonLink>

@@ -69,15 +69,15 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
               </div>
               <div>
                 <div className="font-extrabold">{formatWeekday(order.deliveryDate)}</div>
-                <div className={cx("text-sm font-semibold", order.daysLeft < 7 && order.status !== "CONCLUIDO" ? "text-crimson-ink" : "text-muted")}>
+                <div className={cx("text-sm font-semibold", order.daysLeft <= 7 && order.status !== "CONCLUIDO" ? "text-crimson-ink" : "text-muted")}>
                   {order.status === "CONCLUIDO" ? `Entregue em ${order.deliveredAt && formatDate(order.deliveredAt)}`
-                    : `${order.daysLeft < 0 ? `Atrasado ${-order.daysLeft} dias` : `Faltam ${order.daysLeft} dias`} · P.E. ${order.deadlineLevel}${order.deadlineLevel === 1 ? " (menos de 7 dias)" : ""}`}
+                    : `${order.daysLeft < 0 ? `Atrasado ${-order.daysLeft} dias` : `Faltam ${order.daysLeft} dias`}`}
                 </div>
               </div>
             </div>
             {order.priority === "URGENTE" && order.status !== "CONCLUIDO" && (
               <p className="mt-4 flex items-start gap-2 rounded-xl bg-crimson-soft p-3 text-sm font-semibold text-crimson-ink">
-                <AlertTriangle size={16} className="mt-0.5 shrink-0" />Prioridade urgente: prazo de até 7 dias com grande quantidade de peças.
+                <AlertTriangle size={16} className="mt-0.5 shrink-0" />Prioridade urgente: entrega em até 7 dias.
               </p>
             )}
             <Lifecycle status={order.status} />
