@@ -6,7 +6,6 @@
 
 Front-end do sistema de gestão de encomendas de uniformes e confecções.
 Aplicação **Next.js 16 (App Router)** com renderização híbrida, autenticação por sessão em cookie `httpOnly`,
-upload de imagens para **Vercel Blob** e PWA instalável.
 
 <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16.4-000000?logo=nextdotjs&logoColor=white" />
 <img alt="React" src="https://img.shields.io/badge/React-19.3-149ECA?logo=react&logoColor=white" />
