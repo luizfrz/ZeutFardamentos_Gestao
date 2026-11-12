@@ -8,7 +8,6 @@ export async function AdminNav() {
   if (user?.role !== "ADMIN") return null;
   return (
     <nav aria-label="Administração" className="hidden md:flex">
-      <NavLink href="/users"><Users size={18} />Usuários</NavLink>
     </nav>
   );
 }

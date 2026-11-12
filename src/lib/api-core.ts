@@ -54,6 +54,7 @@ export function createApi(request: RequestFn) {
       remove: (id: string) => request<{ id: string }>(`/molds/${id}`, { method: "DELETE" }),
     },
     sizeGrids: () => request<SizeGrid[]>("/size-grids"),
+    updateGrid: (id: string, sizes: string[]) => request<SizeGrid>(`/size-grids/${id}`, { method: "PATCH", body: JSON.stringify({ sizes }) }),
     users: {
       list: () => request<AppUser[]>("/users"),
       create: (body: { name: string; email: string; password: string; role: "ADMIN" | "USER" }) =>

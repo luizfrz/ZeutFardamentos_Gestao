@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Pencil, Plus, TriangleAlert, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CATEGORY_LABEL, categoryIcon } from "./category";
 import { Button, Checkbox, cx, Field, Input, Segmented, Select, useToast } from "@/components/ui";
@@ -14,9 +15,10 @@ const EXAMPLE: Record<MoldCategory, string> = {
   OUTRO: "",
 };
 export function MoldModal({ molds, grids, onClose, onSaved }: {
-  molds: Mold[]; grids: SizeGrid[]; onClose: () => void; onSaved: (m: Mold) => void;
+  molds: Mold[]; grids: SizeGrid[]; onClose: () => void; onSaved: (m: Mold, addToOrder: boolean) => void;
 }) {
   const toast = useToast();
+  const router = useRouter();
   const [category, setCategory] = useState<MoldCategory>("BLUSA");
   const [name, setName] = useState("");
   const [models, setModels] = useState<string[]>(DEFAULT_MODELS);
@@ -28,6 +30,13 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
   const [group, setGroup] = useState("");
   const [hasSizes, setHasSizes] = useState(false);
   const [notes, setNotes] = useState("");
+  const [size, setSize] = useState("");
+  const [model, setModel] = useState("");
+  // Estojo/bolsa: marcado = o valor é guardado no molde e passa a ser sugerido nos próximos cadastros
+  const [keepSize, setKeepSize] = useState(true);
+  const [keepModel, setKeepModel] = useState(true);
+  const [gridEdit, setGridEdit] = useState<{ id: string; sizes: string[]; input: string } | null>(null);
+  const [gridBusy, setGridBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -40,9 +49,12 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
 
   const origins = molds.filter((m) => m.category === category);
   const groups = [...new Set(molds.map((m) => m.group).filter(Boolean))] as string[];
+  const estojos = molds.filter((m) => m.category === "ESTOJO_BOLSA");
+  const sizeOptions = [...new Set(estojos.map((m) => m.size).filter(Boolean))] as string[];
+  const modelOptions = [...new Set(estojos.flatMap((m) => m.models ?? []))];
   const toggle = <T,>(arr: T[], v: T) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
-  async function save() {
+  async function save(addToOrder: boolean) {
     const errs: string[] = [];
     if (!name.trim()) errs.push("Informe o nome do molde");
     if (isVariation && !variationOfId) errs.push("Escolha de qual modelo este é uma variação");
@@ -55,13 +67,31 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
         category, name: name.trim(), notes: notes.trim() || undefined,
         variationOfId: isVariation ? variationOfId : undefined,
         ...(category === "BLUSA" ? { models, gridIds } : {}),
+        ...(category === "ESTOJO_BOLSA" ? { size: keepSize ? size.trim() || undefined : undefined, models: keepModel && model.trim() ? [model.trim()] : undefined } : {}),
         ...(category === "OUTRO" ? { group: group.trim() || undefined, hasSizes } : {}),
       });
       toast.success("Molde cadastrado com sucesso", mold.name);
-      onSaved(mold);
+      onSaved(mold, addToOrder);
     } catch (e) {
       setErrors(e instanceof ApiError ? e.messages : ["Não foi possível salvar o molde"]);
     } finally { setSaving(false); }
+  }
+
+  const openGrid = (id: string) => setGridEdit({ id, sizes: [...(grids.find((g) => g.id === id)?.sizes ?? [])], input: "" });
+  const addGridSize = () => setGridEdit((g) => {
+    const v = g?.input.trim();
+    return g && v ? { ...g, sizes: g.sizes.includes(v) ? g.sizes : [...g.sizes, v], input: "" } : g;
+  });
+  async function saveGrid() {
+    if (!gridEdit) return;
+    setGridBusy(true); setErrors([]);
+    try {
+      await api.updateGrid(gridEdit.id, gridEdit.sizes);
+      toast.success("Tamanhos da grade atualizados", grids.find((g) => g.id === gridEdit.id)?.name);
+      setGridEdit(null);
+      router.refresh();
+    } catch (e) { setErrors(e instanceof ApiError ? e.messages : ["Não foi possível salvar a grade"]); }
+    finally { setGridBusy(false); }
   }
 
   return (
@@ -98,6 +128,25 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
             )}
           </div>
 
+          {category === "ESTOJO_BOLSA" && (
+            <div className="mt-5 grid gap-5 md:grid-cols-2">
+              <div className="space-y-3">
+                <Field label="Tamanho (opcional)" hint="Insira as dimensões ou selecione da lista.">
+                  <Input list="mold-sizes" value={size} onChange={(e) => setSize(e.target.value)} placeholder="Ex.: 6 Altura x 26 Comprimento" />
+                  <datalist id="mold-sizes">{sizeOptions.map((o) => <option key={o} value={o} />)}</datalist>
+                </Field>
+                <Checkbox checked={keepSize} onChange={setKeepSize}>Incorporar nova dimensão à lista.</Checkbox>
+              </div>
+              <div className="space-y-3">
+                <Field label="Modelo (opcional)" hint="Especifique se houver um modelo ou selecione da lista.">
+                  <Input list="mold-models" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Ex.: Escolar" />
+                  <datalist id="mold-models">{modelOptions.map((o) => <option key={o} value={o} />)}</datalist>
+                </Field>
+                <Checkbox checked={keepModel} onChange={setKeepModel}>Incorporar novo modelo à lista.</Checkbox>
+              </div>
+            </div>
+          )}
+
           {category === "BLUSA" && (
             <>
               <div className="mt-5 text-sm font-extrabold">Modelos disponíveis <span className="text-crimson-ink">*</span> <span className="font-normal text-muted">selecione um ou mais</span></div>
@@ -130,7 +179,30 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
                   </div>
                 ))}
               </div>
-              <p className="mt-3 flex items-center gap-1.5 text-sm font-bold text-crimson-ink"><Pencil size={14} />Os tamanhos de cada grade são definidos no catálogo de grades</p>
+              {gridEdit ? (
+                <div className="mt-3 rounded-xl border border-line bg-cream-2 p-4">
+                  <Field label="Grade">
+                    <Select value={gridEdit.id} onChange={(e) => openGrid(e.target.value)}>{grids.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}</Select>
+                  </Field>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {gridEdit.sizes.map((s) => (
+                      <span key={s} className="inline-flex items-center gap-1 rounded-md bg-navy-soft py-1 pl-2 pr-1 text-xs font-bold">
+                        {s}<button type="button" aria-label={`Remover tamanho ${s}`} onClick={() => setGridEdit({ ...gridEdit, sizes: gridEdit.sizes.filter((x) => x !== s) })} className="grid h-5 w-5 place-items-center rounded text-muted hover:text-crimson-ink"><X size={12} /></button>
+                      </span>
+                    ))}
+                  </div>
+                  <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); addGridSize(); }}>
+                    <Input value={gridEdit.input} onChange={(e) => setGridEdit({ ...gridEdit, input: e.target.value })} placeholder="Novo tamanho (ex.: EXG)" className="py-2" aria-label="Novo tamanho" />
+                    <Button variant="outline" className="py-2" onClick={addGridSize}>Adicionar</Button>
+                  </form>
+                  <div className="mt-4 flex gap-3">
+                    <Button disabled={gridBusy || !gridEdit.sizes.length} onClick={saveGrid}>Salvar tamanhos</Button>
+                    <Button variant="ghost" onClick={() => setGridEdit(null)}>Cancelar</Button>
+                  </div>
+                </div>
+              ) : (
+                <button type="button" onClick={() => grids[0] && openGrid(grids[0].id)} className="mt-3 flex items-center gap-1.5 py-2.5 text-sm font-bold text-crimson-ink"><Pencil size={14} />Editar tamanhos de uma grade</button>
+              )}
             </>
           )}
 
@@ -161,7 +233,8 @@ export function MoldModal({ molds, grids, onClose, onSaved }: {
 
         <div className="flex flex-col-reverse gap-3 border-t border-line bg-cream-2 px-5 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:px-8 sm:py-5">
           <Button variant="ghost" className="w-full sm:w-auto" onClick={onClose}>Cancelar</Button>
-          <Button className="w-full sm:w-auto" disabled={saving} onClick={save}><Check size={16} />Salvar e adicionar ao pedido</Button>
+          <Button variant="outline" className="w-full sm:w-auto" disabled={saving} onClick={() => save(false)}>Salvar</Button>
+          <Button className="w-full sm:w-auto" disabled={saving} onClick={() => save(true)}><Check size={16} />Salvar e adicionar ao pedido</Button>
         </div>
       </div>
     </div>

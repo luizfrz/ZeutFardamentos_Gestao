@@ -11,7 +11,7 @@ export interface Responsible { id: string; name: string; cpf?: string; phone: st
 export interface SizeGrid { id: string; name: string; description: string; sizes: string[] }
 export interface Mold {
   id: string; category: MoldCategory; name: string; group?: string; models?: string[];
-  gridIds?: string[]; hasSizes?: boolean; variationOfId?: string; notes?: string;
+  gridIds?: string[]; hasSizes?: boolean; variationOfId?: string; notes?: string; size?: string;
 }
 export interface OrderItem {
   id?: string; moldId: string; model?: string; color: string;

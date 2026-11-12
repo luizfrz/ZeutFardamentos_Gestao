@@ -10,12 +10,8 @@ function applyTheme(theme: "light" | "dark") {
   document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", HEADER_COLOR[theme]));
 }
 
-/**
- * Alterna claro/escuro. O tema inicial (preferência salva ou do sistema) é aplicado por um script
- * no <head> antes da pintura; aqui só trocamos e guardamos a escolha. Os dois ícones são renderizados
- * sempre e escondidos por CSS, então não há divergência entre servidor e cliente.
- */
-export function ThemeToggle() {
+/** Mantido sempre montado no cabeçalho: sincroniza o tema do sistema e o theme-color. A escolha em si fica no menu do perfil. */
+export function ThemeSync() {
   useEffect(() => {
     // Sem escolha salva, acompanha mudanças do tema do sistema.
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -27,23 +23,21 @@ export function ThemeToggle() {
     applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light"); // sincroniza o theme-color
     return () => mq.removeEventListener("change", onChange);
   }, []);
+  return null;
+}
 
-  function toggle() {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    applyTheme(next);
-    try { localStorage.setItem("theme", next); } catch {}
-  }
+function choose(theme: "light" | "dark") {
+  applyTheme(theme);
+  try { localStorage.setItem("theme", theme); } catch {}
+}
 
+/** Escolha Claro/Escuro. O destaque vem do CSS (dark:), então não diverge entre servidor e cliente. */
+export function ThemeSwitch() {
+  const base = "flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition-colors";
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label="Alternar entre modo claro e escuro"
-      title="Alternar tema"
-      className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 text-white transition-colors hover:bg-white/20 sm:h-11 sm:w-11"
-    >
-      <Moon size={18} className="dark:hidden" />
-      <Sun size={18} className="hidden dark:block" />
-    </button>
+    <div className="flex gap-1 rounded-xl bg-navy-soft p-1" role="group" aria-label="Aparência">
+      <button type="button" onClick={() => choose("light")} className={`${base} bg-surface text-ink shadow-sm dark:bg-transparent dark:text-muted`}><Sun size={16} />Claro</button>
+      <button type="button" onClick={() => choose("dark")} className={`${base} text-muted dark:bg-surface dark:text-ink dark:shadow-sm`}><Moon size={16} />Escuro</button>
+    </div>
   );
 }

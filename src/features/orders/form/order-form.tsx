@@ -250,7 +250,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
 
       {modal && (
         <MoldModal molds={allMolds} grids={grids} onClose={() => setModal(false)}
-          onSaved={(m) => { setAllMolds((l) => [...l, m]); setModal(false); addMold(m); }} />
+          onSaved={(m, add) => { setAllMolds((l) => [...l, m]); setModal(false); if (add) addMold(m); }} />
       )}
     </div>
   );
