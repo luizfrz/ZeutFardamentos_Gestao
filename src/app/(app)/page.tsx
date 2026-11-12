@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, UserPlus } from "lucide-react";
 import { Suspense } from "react";
 import { DeliveredTable } from "@/features/orders/components/delivered-table";
 import { OverdueAlert } from "@/features/orders/components/overdue-alert";
@@ -18,7 +18,10 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
             <TodayLabel />
           </div>
         </div>
-        <ButtonLink href="/orders/new"><Plus size={18} />Cadastrar novo pedido</ButtonLink>
+        <div className="flex flex-wrap gap-3">
+          <ButtonLink variant="outline" href="/register"><UserPlus size={18} />Novo cadastro</ButtonLink>
+          <ButtonLink href="/orders/new"><Plus size={18} />Cadastrar novo pedido</ButtonLink>
+        </div>
       </div>
 
       <Suspense fallback={null}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -39,10 +39,6 @@ export function Header({ userMenu, adminNav }: { userMenu?: ReactNode; adminNav?
         </form>
 
         <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-          <Link href="/register" aria-label="Novo cadastro" title="Novo cadastro"
-            className="flex h-10 w-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-crimson text-[15px] font-bold transition-colors hover:bg-crimson-dark sm:h-11 min-[440px]:w-auto min-[440px]:px-5">
-            <Plus size={18} /><span className="hidden min-[440px]:inline">Novo cadastro</span>
-          </Link>
           <ThemeSync />
           {userMenu}
         </div>
