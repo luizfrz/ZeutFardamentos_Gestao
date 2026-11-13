@@ -4,7 +4,6 @@ import { ChevronDown, Minus, Plus, Trash2 } from "lucide-react";
 import { cx, Field, Input, Select } from "@/components/ui";
 import type { Mold, SizeGrid } from "@/lib/types";
 import { categoryIcon, CATEGORY_LABEL } from "@/features/molds/category";
-
 export interface DraftItem {
   key: string;
   moldId: string;
@@ -64,7 +63,7 @@ export function ProductCard({ item, mold, molds, grids, onChange, onRemove }: {
             {gridMode && mold.models?.length ? (
               <Field label="Manga" required hint="Padrão do molde; pode ser alterada neste pedido">
                 <Select value={item.model} onChange={(e) => onChange({ model: e.target.value })}>
-                  {mold.models.map((m) => <option key={m}>{m}</option>)}
+                  {[...new Set([...mold.models, "Camisa básica"])].map((m) => <option key={m}>{m}</option>)}
                 </Select>
               </Field>
             ) : null}
