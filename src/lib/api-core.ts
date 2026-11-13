@@ -54,6 +54,7 @@ export function createApi(request: RequestFn) {
       remove: (id: string) => request<{ id: string }>(`/molds/${id}`, { method: "DELETE" }),
     },
     sizeGrids: () => request<SizeGrid[]>("/size-grids"),
+    createGrid: (body: { name: string; description?: string; sizes: string[] }) => request<SizeGrid>("/size-grids", { method: "POST", body: JSON.stringify(body) }),
     updateGrid: (id: string, sizes: string[]) => request<SizeGrid>(`/size-grids/${id}`, { method: "PATCH", body: JSON.stringify({ sizes }) }),
     users: {
       list: () => request<AppUser[]>("/users"),

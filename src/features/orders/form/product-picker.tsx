@@ -8,7 +8,7 @@ import type { Mold, MoldCategory } from "@/lib/types";
 import { categoryIcon, CATEGORY_LABEL } from "@/features/molds/category";
 
 const COLUMNS: { cat: MoldCategory; title: string }[] = [
-  { cat: "BLUSA", title: "BLUSAS" }, { cat: "ESTOJO_BOLSA", title: "ESTOJOS E BOLSAS" }, { cat: "OUTRO", title: "OUTROS PRODUTOS" },
+  { cat: "BLUSA", title: "VESTUÁRIO" }, { cat: "ESTOJO_BOLSA", title: "ESTOJOS E BOLSAS" }, { cat: "OUTRO", title: "OUTROS PRODUTOS" },
 ];
 
 export function ProductPicker({ molds, inUseIds, onPick, onCreate, onDeleted }: {

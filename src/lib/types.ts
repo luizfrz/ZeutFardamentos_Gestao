@@ -2,6 +2,7 @@ export type ClientType = "PF" | "PJ" | "ORGAO";
 export type ContactKind = "TELEFONE" | "WHATSAPP" | "INSTAGRAM";
 export type OrderStatus = "NAO_INICIADO" | "PENDENTE" | "CONCLUIDO";
 export type Priority = "URGENTE" | "ALTA" | "MEDIA" | "BAIXA";
+export type PieceType = "CIMA" | "BAIXO" | "INTEIRO";
 export type MoldCategory = "BLUSA" | "ESTOJO_BOLSA" | "OUTRO";
 
 export interface Contact { kind: ContactKind; value: string; ownerName?: string; ownerDocument?: string }
@@ -12,6 +13,7 @@ export interface SizeGrid { id: string; name: string; description: string; sizes
 export interface Mold {
   id: string; category: MoldCategory; name: string; group?: string; models?: string[];
   gridIds?: string[]; hasSizes?: boolean; variationOfId?: string; notes?: string; size?: string;
+  pieceType?: PieceType; properties?: string[];
 }
 export interface OrderItem {
   id?: string; moldId: string; model?: string; color: string;

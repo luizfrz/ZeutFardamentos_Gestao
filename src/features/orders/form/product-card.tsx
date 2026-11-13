@@ -62,7 +62,7 @@ export function ProductCard({ item, mold, molds, grids, onChange, onRemove }: {
               </Select>
             </Field>
             {gridMode && mold.models?.length ? (
-              <Field label="Modelo" required hint={mold.models.join(" · ")}>
+              <Field label="Manga" required hint="Padrão do molde; pode ser alterada neste pedido">
                 <Select value={item.model} onChange={(e) => onChange({ model: e.target.value })}>
                   {mold.models.map((m) => <option key={m}>{m}</option>)}
                 </Select>
