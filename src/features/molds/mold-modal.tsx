@@ -8,7 +8,7 @@ import { Button, Checkbox, ConfirmDialog, cx, Field, Input, Segmented, Select, u
 import { api, ApiError } from "@/lib/api-client";
 import type { Mold, MoldCategory, PieceType, SizeGrid } from "@/lib/types";
 
-const SLEEVES = ["Curta", "3/4", "Longa", "Gola-polo", "Raglan"];
+const SLEEVES = ["Curta", "3/4", "Longa", "Gola-polo", "Raglan", "Camisa básica"];
 const PIECES = Object.keys(PIECE_LABEL) as PieceType[];
 const EXAMPLE: Record<MoldCategory, string> = {
   BLUSA: "Ex.: Camiseta Básica, Regata, Calça, Macacão",
