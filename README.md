@@ -122,8 +122,9 @@ src/
 └── proxy.ts                  proteção das páginas
 ```
 
-Copyright 2026 Luiz França. Todos os direitos reservados.
 
-Licensed under the Apache License, Version 2.0 (the "License");
+_Copyright **2026** Luiz França. Todos os direitos reservados_
+
+_Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+You may obtain a copy of the License at_
