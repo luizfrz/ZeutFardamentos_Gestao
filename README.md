@@ -165,24 +165,5 @@ src/
 ```
 
 
-##  Design system, tema e PWA
 
-**Tema.** As cores são *design tokens* em `src/app/globals.css`: `:root` é o tema claro e `[data-theme="dark"]` o escuro. O alternador segue o
-tema do sistema até haver escolha, que fica salva no aparelho. Use as classes semânticas (`bg-surface`, `text-ink`, `text-crimson-ink`, `text-ok-ink`…) e
-**não** cores fixas como `bg-white`.
-
-| Token | Valor (claro) | Origem |
-|---|---|---|
-| azul | `#0c1844` | logo |
-| carmim | `#c80036` | logo |
-| creme | `#fff5e1` | logo |
-| coral | `#ff6969` | logo |
-
-**Marca.** As logos originais ficam em `brand/` (não são publicadas). `npm run brand:build` (`scripts/generate-brand-assets.mjs`) gera a logo web,
-o avatar do cabeçalho, a arte do login, os ícones do PWA, o `apple-icon` e o favicon.
-
-**PWA.** `src/app/manifest.ts`, `public/sw.js` e `public/icons/`. Instalável (exige HTTPS, que a Vercel já fornece) e com página offline.
-
-**Feedback.** `ToastProvider` fica no layout da área logada e sobrevive à troca de página (ex.: salvar e navegar para o pedido).
-Sucesso some em 4,5 s e erro em 7 s; respeita `prefers-reduced-motion`.
 
