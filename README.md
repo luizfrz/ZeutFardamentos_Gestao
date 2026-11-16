@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/brand/avatar-128.webp" alt="Zeut" width="96" height="96" />
+<img src="public/brand/avatar-128.webp" alt="Zeut" width="100" height="100" />
 
 # Zeut · Gestão de Encomendas — Web
 
@@ -19,19 +19,7 @@ Aplicação **Next.js 16 (App Router)** com renderização híbrida, autenticaç
 <img alt="NestJS API" src="https://img.shields.io/badge/API-NestJS_·_Prisma_·_PostgreSQL-E0234E?logo=nestjs&logoColor=white" />
 
 </div>
-
-
-## 1. Visão geral
-
-| | |
-|---|---|
-| **Domínio** | Pedidos de uniformes: clientes (PF/PJ/órgão público), responsáveis, moldes e grades de tamanho, produção e entrega |
-| **Frontend** | Este repositório — Next.js 16, React 19, Tailwind CSS 4, TypeScript estrito |
-| **Backend** | Repositório separado `zeut_gestao_api` — NestJS 12, Prisma 7, PostgreSQL (Neon) |
-| **Infra** | Vercel (front e API como projetos distintos) · Neon (Postgres, `sa-east-1`) · Vercel Blob (imagens) |
-| **Acesso** | Fechado: todas as rotas exigem login. Não há cadastro público; administradores criam as contas |
-
-Funcionalidades: painel priorizado de encomendas, alerta de atrasos, cadastro de clientes/responsáveis, formulário de pedido
+Painel priorizado de encomendas, alerta de atrasos, cadastro de clientes/responsáveis, formulário de pedido
 com produtos por molde e grade de tamanhos, ciclo de vida do pedido, galeria de fotos, gestão de usuários com papéis,
 modo escuro e instalação como aplicativo (PWA).
 
@@ -59,17 +47,6 @@ flowchart LR
     B -->|formulário de login| SA -->|POST /auth/login| API
     B -.->|exibe a foto direto do CDN| BLOB
 ```
-
-**Decisões e motivos**
-
-| Decisão | Motivo |
-|---|---|
-| Token JWT em cookie `httpOnly` e ponte `/backend/*` | O JavaScript da página nunca lê o token (mitiga roubo por XSS) e o navegador só conversa com a própria origem, sem CORS |
-| Leitura de dados em **Server Components** dentro de `<Suspense>` | Menos JavaScript no cliente; o shell da página chega rápido e os dados fazem streaming |
-| `features/*` isoladas, `app/` só compõe | Cada funcionalidade é removível; rotas ficam finas e testáveis |
-| Compressão da imagem **no navegador** | Contorna o limite de ~4,5 MB do corpo de requisição da Vercel e reduz o armazenamento |
-| Regras de negócio duplicadas (prioridade, datas) só para **feedback ao vivo** | A API continua sendo a fonte da verdade e revalida tudo |
-
 ## Autenticação e sessão
 
 ```mermaid
@@ -90,25 +67,6 @@ sequenceDiagram
     A-->>X: dados
     X-->>U: HTML (streaming)
 ```
-
-- **Sessão**: JWT HS256 (`jose`) com `issuer=zeut-api` e `audience=zeut-web`, guardado em cookie `httpOnly` + `Secure` (produção) + `SameSite=Lax`.
-- **Papéis**: `USER` e `ADMIN`. O papel é conferido **no banco** a cada chamada, então rebaixar um usuário vale na hora para novas ações administrativas.
-- **Redirecionamento pós-login**: a rota pedida fica no cookie `zeut_next`; `safeNext()` aceita só caminhos internos (proteção contra *open redirect*).
-- **Token expirado ou inválido**: `/session-expired` (Route Handler) limpa o cookie e volta ao login.
-- **Força bruta**: a API limita 5 tentativas por 15 min por IP + e-mail.
-
-| Peça | Arquivo |
-|---|---|
-| Checagem otimista de sessão nas páginas | `src/proxy.ts` |
-| Cookie de sessão, leitura e expiração | `src/lib/session.ts`, `src/lib/token.ts` |
-| Cliente da API para Server Components (anexa o token) | `src/lib/api-server.ts` |
-| Cliente da API para componentes de cliente (via `/backend`) | `src/lib/api-client.ts` |
-| Ponte navegador → API, com checagem de `Origin` (CSRF) | `src/app/backend/[...path]/route.ts` |
-| Login, logout e navegação de administração | `src/features/auth/` |
-| Gestão de contas (somente `ADMIN`) | `src/features/users/` · `src/app/(app)/users/` |
-
-> O `proxy.ts` só lê o cookie para evitar telas vazias. Quem protege os **dados** é a API, que valida a assinatura do token a cada requisição.
-
 ## Upload de imagens
 
 ```mermaid
@@ -163,7 +121,3 @@ src/
 │                             documents (CPF/CNPJ/telefone) · priority · types · cn
 └── proxy.ts                  proteção das páginas
 ```
-
-
-
-
