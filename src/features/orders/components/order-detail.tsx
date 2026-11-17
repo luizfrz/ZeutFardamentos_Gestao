@@ -65,12 +65,15 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
             <CardTitle icon={<Calendar size={20} />}>Prazo de entrega</CardTitle>
             <div className="mt-5 flex items-center gap-4">
               <div className="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-crimson text-center text-white">
-                <div><div className="text-2xl font-extrabold leading-none">{dayOfMonth(order.deliveryDate)}</div><div className="mt-0.5 text-[11px] font-extrabold">{monthAbbr(order.deliveryDate)}</div></div>
+                {order.deliveryDate
+                  ? <div><div className="text-2xl font-extrabold leading-none">{dayOfMonth(order.deliveryDate)}</div><div className="mt-0.5 text-[11px] font-extrabold">{monthAbbr(order.deliveryDate)}</div></div>
+                  : <Calendar size={26} />}
               </div>
               <div>
-                <div className="font-extrabold">{formatWeekday(order.deliveryDate)}</div>
+                <div className="font-extrabold">{order.deliveryDate ? formatWeekday(order.deliveryDate) : "Sem prazo definido"}</div>
                 <div className={cx("text-sm font-semibold", order.daysLeft <= 5 && order.status !== "CONCLUIDO" ? "text-crimson-ink" : "text-muted")}>
                   {order.status === "CONCLUIDO" ? `Entregue em ${order.deliveredAt && formatDate(order.deliveredAt)}`
+                    : !order.deliveryDate ? "Edite o pedido para definir a data"
                     : `${order.daysLeft < 0 ? `Atrasado ${-order.daysLeft} dias` : `Faltam ${order.daysLeft} dias`}`}
                 </div>
               </div>

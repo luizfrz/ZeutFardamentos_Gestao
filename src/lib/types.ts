@@ -24,7 +24,7 @@ export interface OrderLink { label?: string; url: string }
 
 export interface Order {
   id: string; number: number; name: string; description?: string;
-  clientId: string; responsibleId: string; deliveryDate: string;
+  clientId: string; responsibleId: string; deliveryDate?: string;
   status: OrderStatus; createdAt: string; deliveredAt?: string;
   items: OrderItem[]; links: OrderLink[]; images: string[];
   totalPieces: number; daysLeft: number; priority: Priority;

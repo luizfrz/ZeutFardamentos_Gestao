@@ -15,6 +15,7 @@ export function Filters() {
     const next = new URLSearchParams(params.toString());
     if (value) next.set(key, value);
     else next.delete(key);
+    if (key === "priority") next.delete("deadline"); // escolher uma prioridade sai do filtro "atrasados"
     router.replace(`${pathname}?${next.toString()}`, { scroll: false });
   }
   const priority = params.get("priority") ?? "";

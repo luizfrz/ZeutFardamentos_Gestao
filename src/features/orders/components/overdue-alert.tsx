@@ -17,7 +17,7 @@ export async function OverdueAlert() {
     <section role="alert" className="mb-6 rounded-2xl border border-crimson/30 bg-crimson-soft p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-crimson text-white"><AlertTriangle size={19} /></span>
+          <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-crimson text-white motion-safe:animate-pulse"><AlertTriangle size={19} /></span>
           <div>
             <h2 className="text-lg font-extrabold text-crimson-ink">
               {overdue.length === 1 ? "Há 1 pedido atrasado" : `Há ${overdue.length} pedidos atrasados`}

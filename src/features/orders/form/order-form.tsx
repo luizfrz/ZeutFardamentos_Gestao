@@ -81,10 +81,10 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   const needsPastConfirm = !!deadline?.past && !(initial && date === initial.deliveryDate);
 
   const checks = {
-    client: !!clientId, responsible: !!responsibleId, name: !!name.trim(), date: !!date, products: items.length > 0 && total > 0,
+    client: !!clientId, responsible: !!responsibleId, name: !!name.trim(), products: items.length > 0 && total > 0,
   };
   const valid = Object.values(checks).every(Boolean);
-  const firstMissing = !checks.client ? "Vincule um cliente" : !checks.responsible ? "Vincule um responsável" : !checks.name ? "Preencha o nome do pedido" : !checks.date ? "Informe a data de entrega" : !checks.products ? "Adicione produtos com quantidade" : "";
+  const firstMissing = !checks.client ? "Vincule um cliente" : !checks.responsible ? "Vincule um responsável" : !checks.name ? "Preencha o nome do pedido" : !checks.products ? "Adicione produtos com quantidade" : "";
 
   function requestSave() {
     setTouched(true);
@@ -106,7 +106,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
       return;
     }
     const body = {
-      name: name.trim(), description: description.trim() || undefined, clientId, responsibleId, deliveryDate: date, totalValue: parseBRL(totalValue),
+      name: name.trim(), description: description.trim() || undefined, clientId, responsibleId, deliveryDate: date || null, totalValue: parseBRL(totalValue),
       items: items.filter((it) => itemPieces(it, moldOf(it.moldId)) > 0).map((it) => {
         const m = moldOf(it.moldId);
         return usesGrid(m)
@@ -174,8 +174,8 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
             <Field label="Nome do pedido" required error={nameInvalid && "Campo obrigatório. Dê um nome para identificar o pedido."}>
               <Input value={name} onChange={(e) => setName(e.target.value)} invalid={nameInvalid} placeholder="Ex.: Uniformes Escola Raio de Sol" />
             </Field>
-            <Field label="Data de entrega" required
-              hint={deadline && <span className={cx("font-bold", DEADLINE_TONE[deadline.tone])}>{deadline.label}</span>}>
+            <Field label="Data de entrega"
+              hint={deadline ? <span className={cx("font-bold", DEADLINE_TONE[deadline.tone])}>{deadline.label}</span> : "Opcional"}>
               <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} invalid={!!deadline?.past} />
             </Field>
           </div>
@@ -223,14 +223,13 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
               <PriorityBadge priority={priority} />
               <p className="mt-2.5 text-sm font-semibold">{deadline?.label} com {piecesLabel(total)} em {items.length} {items.length === 1 ? "produto" : "produtos"}.</p>
             </>
-          ) : <p className="text-sm font-semibold text-muted">Informe a data de entrega e os produtos para calcular.</p>}
+          ) : <p className="text-sm font-semibold text-muted">Sem data de entrega, a prioridade fica baixa. Informe a data para calcular.</p>}
         </div>
         <div className="mb-2 text-sm font-extrabold text-muted">Campos obrigatórios</div>
         <ul className="space-y-3">
           <ChecklistItem ok={checks.client}>Cliente vinculado</ChecklistItem>
           <ChecklistItem ok={checks.responsible}>Responsável vinculado</ChecklistItem>
           <ChecklistItem ok={checks.name}>Nome do pedido</ChecklistItem>
-          <ChecklistItem ok={checks.date}>Data de entrega</ChecklistItem>
           <ChecklistItem ok={checks.products}>Produtos{total > 0 && ` (${items.length} · ${piecesLabel(total)})`}</ChecklistItem>
         </ul>
         <div className="mt-5 space-y-3 border-t border-line pt-5">
