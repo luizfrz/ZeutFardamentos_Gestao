@@ -35,6 +35,7 @@ export function createApi(request: RequestFn) {
       create: (body: unknown) => request<Order>("/orders", { method: "POST", body: JSON.stringify(body) }),
       update: (id: string, body: unknown) => request<Order>(`/orders/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
       addPayment: (id: string, body: { amount: number; paidAt?: string }) => request<Order>(`/orders/${id}/payments`, { method: "POST", body: JSON.stringify(body) }),
+      remove: (id: string) => request<{ id: string }>(`/orders/${id}`, { method: "DELETE" }),
       removePayment: (id: string, paymentId: string) => request<Order>(`/orders/${id}/payments/${paymentId}`, { method: "DELETE" }),
       setStatus: (id: string, status: OrderStatus) =>
         request<Order>(`/orders/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),
