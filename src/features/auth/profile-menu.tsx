@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, LogOut, Palette, Users } from "lucide-react";
+import { Building2, ChevronDown, LogOut, Palette, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ThemeSwitch } from "@/components/layout/theme-toggle";
@@ -49,6 +49,7 @@ export function ProfileMenu({ name, email, role, initials }: { name: string; ema
             {role === "ADMIN" && (
               <Link href="/users" role="menuitem" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-bold hover:bg-navy-soft/60"><Users size={17} />Gerenciar usuários</Link>
             )}
+            <Link href="/clients" role="menuitem" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-bold hover:bg-navy-soft/60"><Building2 size={17} />Gerenciar clientes</Link>
             <form action={logoutAction}>
               <button type="submit" role="menuitem" className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-bold text-crimson-ink hover:bg-crimson-soft"><LogOut size={17} />Sair da conta</button>
             </form>

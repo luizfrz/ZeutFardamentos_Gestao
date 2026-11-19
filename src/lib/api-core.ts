@@ -43,7 +43,9 @@ export function createApi(request: RequestFn) {
     clients: {
       setAddress: (id: string, address?: unknown) => request<Client>(`/clients/${id}/address`, { method: "PATCH", body: JSON.stringify({ address }) }),
       list: (q?: string) => request<Client[]>(`/clients${qs({ q })}`),
+      get: (id: string) => request<Client>(`/clients/${id}`),
       create: (body: unknown) => request<Client>("/clients", { method: "POST", body: JSON.stringify(body) }),
+      update: (id: string, body: unknown) => request<Client>(`/clients/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
     },
     responsibles: {
       list: (q?: string) => request<Responsible[]>(`/responsibles${qs({ q })}`),

@@ -12,13 +12,15 @@ interface DraftContact { kind: ContactKind; value: string; notOwn: boolean; owne
 const emptyContact = (): DraftContact => ({ kind: "WHATSAPP", value: "", notOwn: false, ownerName: "", ownerDocument: "" });
 const KIND_LABEL: Record<ContactKind, string> = { TELEFONE: "Telefone", WHATSAPP: "WhatsApp", INSTAGRAM: "Instagram" };
 
-export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrder: boolean) => void; onCancel: () => void }) {
-  const [type, setType] = useState<ClientType>("PJ");
-  const [name, setName] = useState("");
-  const [doc, setDoc] = useState("");
+const maskFor = (t: ClientType, d: string) => (t === "PF" ? maskCpf(d) : maskCnpj(d));
+
+export function ClientForm({ initial, onSaved, onCancel }: { initial?: Client; onSaved: (c: Client, thenOrder: boolean) => void; onCancel: () => void }) {
+  const [type, setType] = useState<ClientType>(initial?.type ?? "PJ");
+  const [name, setName] = useState(initial?.name ?? "");
+  const [doc, setDoc] = useState(initial?.document ? maskFor(initial.type, initial.document) : "");
   const [docTouched, setDocTouched] = useState(false);
-  const [contacts, setContacts] = useState<DraftContact[]>([emptyContact()]);
-  const [addr, setAddr] = useState(emptyAddress());
+  const [contacts, setContacts] = useState<DraftContact[]>(initial?.contacts.length ? initial.contacts.map((c) => ({ kind: c.kind, value: c.value, notOwn: c.ownerName !== undefined, ownerName: c.ownerName ?? "", ownerDocument: c.ownerDocument ?? "" })) : [emptyContact()]);
+  const [addr, setAddr] = useState(emptyAddress(initial?.address));
   const [errors, setErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -38,14 +40,15 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
     if (!valid) return;
     setSaving(true); setErrors([]);
     try {
-      const client = await api.clients.create({
+      const body = {
         type, name: name.trim(), document: doc || undefined,
         contacts: contacts.filter((c) => c.value.trim()).map((c) => ({
           kind: c.kind, value: c.value.trim(),
           ...(c.notOwn ? { ownerName: c.ownerName.trim(), ownerDocument: c.ownerDocument || undefined } : {}),
         })),
         address: hasAddress(addr) ? addr : undefined,
-      });
+      };
+      const client = initial ? await api.clients.update(initial.id, body) : await api.clients.create(body);
       onSaved(client, thenOrder);
     } catch (e) {
       setErrors(e instanceof ApiError ? e.messages : ["Não foi possível salvar o cliente"]);
@@ -119,8 +122,8 @@ export function ClientForm({ onSaved, onCancel }: { onSaved: (c: Client, thenOrd
         </ul>
         <p className="mt-5 flex items-start gap-2.5 rounded-xl bg-navy-soft p-3.5 text-xs font-semibold"><TriangleAlert size={15} className="mt-0.5 shrink-0" />O CPF/CNPJ é validado ao sair do campo: formato, dígitos verificadores e números repetidos (ex.: 111.111.111-11).</p>
         <div className="mt-5 space-y-3 border-t border-line pt-5">
-          <Button className="w-full" disabled={!valid || saving} onClick={() => save(false)}><Check size={16} />Salvar cliente</Button>
-          <Button variant="outline" className="w-full" disabled={!valid || saving} onClick={() => save(true)}><Package size={16} />Salvar e criar pedido</Button>
+          <Button className="w-full" disabled={!valid || saving} onClick={() => save(false)}><Check size={16} />{initial ? "Salvar alterações" : "Salvar cliente"}</Button>
+          {!initial && <Button variant="outline" className="w-full" disabled={!valid || saving} onClick={() => save(true)}><Package size={16} />Salvar e criar pedido</Button>}
           {errors.length > 0 && <ul role="alert" className="space-y-1 rounded-xl bg-crimson-soft p-3 text-xs font-semibold text-crimson-ink">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
           <Button variant="ghost" className="w-full" onClick={onCancel}>Cancelar</Button>
         </div>
