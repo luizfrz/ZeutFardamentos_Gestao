@@ -2,6 +2,7 @@ import { Pencil } from "lucide-react";
 import { ButtonLink, Card, CardTitle } from "@/components/ui";
 import { api } from "@/lib/api-server";
 import { CLIENT_TYPE_LABEL } from "@/lib/format";
+import { ClientDeleteButton } from "./client-delete-button";
 import { formatDocument } from "@/lib/documents";
 
 export async function ClientsList() {
@@ -22,7 +23,10 @@ export async function ClientsList() {
                 </div>
                 <div className="truncate text-xs font-semibold text-subtle">{c.contacts.map((k) => k.value).join(" · ")}</div>
               </div>
-              <ButtonLink variant="outline" href={`/clients/${c.id}/edit`}><Pencil size={16} />Editar</ButtonLink>
+              <div className="flex gap-2">
+                <ButtonLink variant="outline" href={`/clients/${c.id}/edit`}><Pencil size={16} />Editar</ButtonLink>
+                <ClientDeleteButton id={c.id} name={c.name} orders={c.orders ?? []} />
+              </div>
             </li>
           ))}
         </ul>

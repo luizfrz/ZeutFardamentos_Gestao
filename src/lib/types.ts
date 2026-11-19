@@ -7,7 +7,7 @@ export type MoldCategory = "BLUSA" | "ESTOJO_BOLSA" | "OUTRO";
 
 export interface Contact { kind: ContactKind; value: string; ownerName?: string; ownerDocument?: string }
 export interface Address { cep?: string; street?: string; number?: string; complement?: string; district?: string; city?: string; uf?: string }
-export interface Client { id: string; type: ClientType; name: string; document?: string; contacts: Contact[]; address?: Address }
+export interface Client { id: string; type: ClientType; name: string; document?: string; contacts: Contact[]; address?: Address; orders?: { id: string; name: string }[] }
 export interface Responsible { id: string; name: string; cpf?: string; phone: string }
 export interface SizeGrid { id: string; name: string; description: string; sizes: string[] }
 export interface Mold {
