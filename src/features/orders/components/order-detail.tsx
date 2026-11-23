@@ -5,8 +5,8 @@ import { api, ApiError } from "@/lib/api-server";
 import { CLIENT_TYPE_LABEL, dayOfMonth, formatDate, formatWeekday, monthAbbr } from "@/lib/format";
 import { formatDocument } from "@/lib/documents";
 import { AddressEditor } from "@/features/clients/address-editor";
-import { ProductionStages } from "./production-stages";
 import { Payments } from "./payments";
+import { Lifecycle } from "./lifecycle";
 import { PhotoGallery } from "./photo-gallery";
 import { OrderActions } from "./order-actions";
 import { QuantityTable } from "./quantity-table";
@@ -83,9 +83,8 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
                 <AlertTriangle size={16} className="mt-0.5 shrink-0" />Prioridade urgente: entrega em até 5 dias.
               </p>
             )}
+            <Lifecycle status={order.status} />
           </Card>
-
-          <ProductionStages key={order.stages.join()} id={order.id} stages={order.stages} />
 
           <Payments order={order} />
 
