@@ -3,18 +3,18 @@
 import { Link2, Plus, TriangleAlert, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { Button, Card, ChecklistItem, ConfirmDialog, cx, Field, Input, StepTitle, Textarea, PriorityBadge, useToast } from "@/components/ui";
+import { Button, Card, CardTitle, ChecklistItem, ConfirmDialog, cx, Field, Input, StepTitle, Textarea, PriorityBadge, useToast } from "@/components/ui";
 import { api, ApiError } from "@/lib/api-client";
 import { daysUntil, formatBRL, formatDate, maskBRL, parseBRL, piecesLabel } from "@/lib/format";
 import { uploadImage } from "@/lib/image";
 import { classifyDeadline, computePriority } from "@/lib/priority";
 import type { Client, Mold, Order, Responsible, SizeGrid } from "@/lib/types";
 import { MoldModal } from "@/features/molds/mold-modal";
-import { ClientSummary } from "./client-summary";
-import { PersonPicker } from "./person-picker";
+import { AddLinks, LinkRows, newRow, type LinkRow } from "./link-rows";
 import { PhotoSlider } from "./photo-slider";
 import { type DraftItem, itemPieces, ProductCard, usesGrid } from "./product-card";
 import { ProductPicker } from "./product-picker";
+import { StageStepper } from "@/features/orders/components/production-stages";
 
 let seq = 0;
 const MAX_IMAGES = 8;
@@ -35,9 +35,11 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   const router = useRouter();
   const toast = useToast();
   const [allMolds, setAllMolds] = useState(molds);
-  const [clientId, setClientId] = useState<string | null>(initial?.clientId ?? presetClientId ?? null);
-  const [responsibleId, setResponsibleId] = useState<string | null>(initial?.responsibleId ?? presetResponsibleId ?? null);
-  const selectedClient = clients.find((c) => c.id === clientId);
+  const [clientRows, setClientRows] = useState<LinkRow[]>(() => (initial ? (initial.clientIds ?? [initial.clientId]) : [presetClientId]).map((id) => newRow(id)));
+  const [respRows, setRespRows] = useState<LinkRow[]>(() => (initial ? (initial.responsibleIds ?? [initial.responsibleId]) : [presetResponsibleId]).map((id) => newRow(id)));
+  const clientIds = clientRows.flatMap((r) => (r.id ? [r.id] : []));
+  const responsibleIds = respRows.flatMap((r) => (r.id ? [r.id] : []));
+  const [stages, setStages] = useState<string[]>(initial?.stages ?? []);
 
   const [items, setItems] = useState<DraftItem[]>(() => initial?.items.map(toDraft) ?? []);
   const [name, setName] = useState(initial?.name ?? "");
@@ -81,7 +83,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   const needsPastConfirm = !!deadline?.past && !(initial && date === initial.deliveryDate);
 
   const checks = {
-    client: !!clientId, responsible: !!responsibleId, name: !!name.trim(), products: items.length > 0 && total > 0,
+    client: clientIds.length > 0, responsible: responsibleIds.length > 0, name: !!name.trim(), products: items.length > 0 && total > 0,
   };
   const valid = Object.values(checks).every(Boolean);
   const firstMissing = !checks.client ? "Vincule um cliente" : !checks.responsible ? "Vincule um responsável" : !checks.name ? "Preencha o nome do pedido" : !checks.products ? "Adicione produtos com quantidade" : "";
@@ -106,7 +108,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
       return;
     }
     const body = {
-      name: name.trim(), description: description.trim() || undefined, clientId, responsibleId, deliveryDate: date || null, totalValue: parseBRL(totalValue),
+      name: name.trim(), description: description.trim() || undefined, clientIds, responsibleIds, deliveryDate: date || null, totalValue: parseBRL(totalValue),
       items: items.filter((it) => itemPieces(it, moldOf(it.moldId)) > 0).map((it) => {
         const m = moldOf(it.moldId);
         return usesGrid(m)
@@ -118,7 +120,8 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
       ...(allowPastDate ? { allowPastDate: true } : {}),
     };
     try {
-      const saved = initial ? await api.orders.update(initial.id, body) : await api.orders.create(body);
+      let saved = initial ? await api.orders.update(initial.id, body) : await api.orders.create(body);
+      if (initial && stages.join() !== initial.stages.join()) saved = await api.orders.setStages(initial.id, stages);
       const fotos = uploaded.length ? `${uploaded.length} ${uploaded.length === 1 ? "foto enviada" : "fotos enviadas"} e salvas no pedido.` : undefined;
       toast.success(initial ? "Pedido atualizado com sucesso" : "Pedido cadastrado com sucesso", fotos ?? saved.name);
       router.push(`/orders/${saved.id}`);
@@ -137,13 +140,11 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
         <Card className="p-7">
           <StepTitle n={1} title="Vínculos" subtitle="Todo pedido precisa de um cliente e de um responsável." />
           <div className="space-y-5">
-            <PersonPicker label="Nome do cliente" docLabel="CPF/CNPJ do cliente" value={clientId} onChange={setClientId}
-              people={clients.map((c) => ({ id: c.id, name: c.name, document: c.document, org: c.type !== "PF", hint: `${c.document ? `${c.document.length === 14 ? "CNPJ" : "CPF"} ${formatDoc(c.document)} · ` : ""}${c.type === "ORGAO" ? "Órgão público" : c.type === "PJ" ? "Empresa" : "Pessoa física"}` }))}
-              onCreate={() => router.push("/register")} createLabel="Cadastrar novo cliente" />
-            {selectedClient && <ClientSummary client={selectedClient} />}
-            <PersonPicker label="Nome do responsável" docLabel="CPF do responsável" value={responsibleId} onChange={setResponsibleId} allowCnpj={false}
-              people={responsibles.map((r) => ({ id: r.id, name: r.name, document: r.cpf }))}
-              onCreate={() => router.push("/register?tab=responsible")} createLabel="Cadastrar novo responsável" />
+            <LinkRows kind="client" rows={clientRows} onChange={setClientRows} all={clients}
+              people={clients.map((c) => ({ id: c.id, name: c.name, document: c.document, org: c.type !== "PF", hint: `${c.document ? `${c.document.length === 14 ? "CNPJ" : "CPF"} ${formatDoc(c.document)} · ` : ""}${c.type === "ORGAO" ? "Órgão público" : c.type === "PJ" ? "Empresa" : "Pessoa física"}` }))} />
+            <LinkRows kind="responsible" rows={respRows} onChange={setRespRows} all={responsibles}
+              people={responsibles.map((r) => ({ id: r.id, name: r.name, document: r.cpf }))} />
+            <AddLinks clientRows={clientRows} onClients={setClientRows} respRows={respRows} onResponsibles={setRespRows} />
           </div>
         </Card>
 
@@ -212,6 +213,13 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
             </div>
           </div>
         </Card>
+        {initial && (
+          <Card className="p-7">
+            <CardTitle>Etapas de produção</CardTitle>
+            <p className="mt-1 text-xs font-semibold text-muted">Opcional. A etapa em andamento fica destacada.</p>
+            <StageStepper done={stages} onToggle={(k) => setStages((d) => (d.includes(k) ? d.filter((x) => x !== k) : [...d, k]))} />
+          </Card>
+        )}
       </div>
 
       <Card className="p-6 lg:sticky lg:top-6">

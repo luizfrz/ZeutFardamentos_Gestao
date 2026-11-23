@@ -11,9 +11,11 @@ export interface Person { id: string; name: string; document?: string; hint?: st
  * Combobox de nome + campo de documento ligados entre si:
  * escolher na lista preenche o documento; digitar um documento válido seleciona a pessoa.
  */
-export function PersonPicker({ label, docLabel, people, value, onChange, onCreate, createLabel, allowCnpj = true }: {
+export function PersonPicker({ label, docLabel, people, value, onChange, onCreate, createLabel, allowCnpj = true, exclude = [] }: {
   label: string; docLabel: string; people: Person[]; value: string | null; onChange: (id: string | null) => void;
   onCreate?: () => void; createLabel?: string; allowCnpj?: boolean;
+  /** Já escolhidos em outras linhas: não aparecem na lista e não podem ser repetidos. */
+  exclude?: string[];
 }) {
   const selected = people.find((p) => p.id === value) ?? null;
   const [text, setText] = useState("");
@@ -24,7 +26,7 @@ export function PersonPicker({ label, docLabel, people, value, onChange, onCreat
   const name = selected ? selected.name : text;
   const doc = selected ? formatDocument(selected.document ?? "") : docText;
   const q = name.toLowerCase();
-  const matches = selected ? people : people.filter((p) => !q || p.name.toLowerCase().includes(q));
+  const matches = selected ? people : people.filter((p) => !exclude.includes(p.id) && (!q || p.name.toLowerCase().includes(q)));
 
   function typeName(v: string) { setText(v); setDocText(""); setDocError(null); onChange(null); setOpen(true); }
 
@@ -39,7 +41,8 @@ export function PersonPicker({ label, docLabel, people, value, onChange, onCreat
     const valid = d.length === 11 ? isValidCpf(d) : isValidCnpj(d);
     if (!valid) { setDocError(d.length === 11 ? "CPF inválido" : "CNPJ inválido: os dígitos verificadores não conferem"); return; }
     const found = people.find((p) => p.document === d);
-    if (found) { setDocError(null); onChange(found.id); } else setDocError("Documento válido, mas nenhum cadastro encontrado");
+    if (found && exclude.includes(found.id)) setDocError("Já vinculado a este pedido");
+    else if (found) { setDocError(null); onChange(found.id); } else setDocError("Documento válido, mas nenhum cadastro encontrado");
   }
 
   return (

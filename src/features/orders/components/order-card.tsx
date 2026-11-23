@@ -34,7 +34,7 @@ export function OrderCard({ order }: { order: Order }) {
         <PriorityBadge priority={order.priority} />
       </div>
       <ul className="mb-4 space-y-2 text-sm font-semibold text-muted">
-        <li className="flex items-center gap-2.5"><User size={15} className="shrink-0 text-ink" />{order.client?.name}</li>
+        <li className="flex items-center gap-2.5"><User size={15} className="shrink-0 text-ink" />{order.client?.name}{(order.clients?.length ?? 0) > 1 && <span className="rounded-full bg-navy-soft px-1.5 text-xs font-bold text-ink">+{order.clients!.length - 1}</span>}</li>
         <li className={cx("flex items-center gap-2.5", late && "font-extrabold text-crimson-ink")}><Calendar size={15} className={cx("shrink-0", late ? "motion-safe:animate-pulse" : "text-ink")} />{order.deliveryDate ? `Entrega ${formatShort(order.deliveryDate)} · ${daysLabel(order.daysLeft)}` : "Sem prazo"}</li>
         <li className="flex items-center gap-2.5"><Package size={15} className="shrink-0 text-ink" />{piecesLabel(order.totalPieces)}</li>
         {order.totalValue ? (() => {

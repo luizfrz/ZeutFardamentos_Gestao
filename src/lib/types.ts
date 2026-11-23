@@ -24,13 +24,14 @@ export interface OrderLink { label?: string; url: string }
 
 export interface Order {
   id: string; number: number; name: string; description?: string;
-  clientId: string; responsibleId: string; deliveryDate?: string;
+  /** Principais; a lista completa (principal primeiro) vem em clientIds/responsibleIds. */
+  clientId: string; responsibleId: string; clientIds: string[]; responsibleIds: string[]; deliveryDate?: string;
   status: OrderStatus; createdAt: string; deliveredAt?: string;
   items: OrderItem[]; links: OrderLink[]; images: string[]; stages: string[];
   totalPieces: number; daysLeft: number; priority: Priority;
   /** Valores em centavos */
   totalValue?: number; payments: Payment[]; paidTotal: number; paymentStatus?: "PAGO" | "PENDENTE";
-  client?: Client; responsible?: Responsible;
+  client?: Client; responsible?: Responsible; clients?: Client[]; responsibles?: Responsible[];
 }
 export interface Payment { id: string; amount: number; paidAt: string }
 

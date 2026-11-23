@@ -18,7 +18,8 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
     api.molds.list(),
     api.sizeGrids(),
   ]);
-  const { client, responsible } = order;
+  const clients = order.clients?.length ? order.clients : order.client ? [order.client] : [];
+  const responsibles = order.responsibles?.length ? order.responsibles : order.responsible ? [order.responsible] : [];
 
   return (
     <>
@@ -36,6 +37,8 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
         <div className="min-w-0 space-y-6">
+          <ProductionStages key={order.stages.join()} id={order.id} stages={order.stages} />
+
           <Card className="p-6">
             <CardTitle icon={<ImageIcon size={20} />}>Imagens</CardTitle>
             {order.images.length ? (
@@ -85,14 +88,12 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
             )}
           </Card>
 
-          <ProductionStages key={order.stages.join()} id={order.id} stages={order.stages} />
-
           <Payments order={order} />
 
           <Card className="p-6">
-            <CardTitle icon={<Building2 size={20} />}>Cliente</CardTitle>
-            {client && (
-              <>
+            <CardTitle icon={<Building2 size={20} />}>{clients.length > 1 ? "Clientes" : "Cliente"}</CardTitle>
+            {clients.map((client, i) => (
+              <div key={client.id} className={cx(i > 0 && "mt-5 border-t border-line pt-1")}>
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <span className="font-extrabold">{client.name}</span>
                   <span className="rounded-full bg-navy-soft px-2.5 py-0.5 text-xs font-bold">{CLIENT_TYPE_LABEL[client.type]}</span>
@@ -113,14 +114,14 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
                     </div>
                   </div>
                 ))}
-              </>
-            )}
+              </div>
+            ))}
           </Card>
 
           <Card className="p-6">
-            <CardTitle icon={<User size={20} />}>Responsável pelo pedido</CardTitle>
-            {responsible && (
-              <>
+            <CardTitle icon={<User size={20} />}>{responsibles.length > 1 ? "Responsáveis pelo pedido" : "Responsável pelo pedido"}</CardTitle>
+            {responsibles.map((responsible, i) => (
+              <div key={responsible.id} className={cx(i > 0 && "mt-5 border-t border-line pt-1")}>
                 <div className="mt-4 flex items-center gap-3">
                   <span className="grid h-11 w-11 place-items-center rounded-full bg-coral text-sm font-extrabold text-white">
                     {responsible.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}
@@ -128,8 +129,8 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
                   <div><div className="font-extrabold">{responsible.name}</div>{responsible.cpf && <div className="text-sm text-muted">CPF {formatDocument(responsible.cpf)}</div>}</div>
                 </div>
                 <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-muted"><Phone size={15} />Telefone · {responsible.phone}</div>
-              </>
-            )}
+              </div>
+            ))}
           </Card>
 
           {order.links.length > 0 && (
