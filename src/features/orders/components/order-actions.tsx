@@ -37,18 +37,18 @@ export function OrderActions({ id, status }: { id: string; status: OrderStatus }
   }
 
   return (
-    <div className="flex flex-col items-end gap-2">
-      <div className="flex flex-wrap gap-3">
-        <ButtonLink variant="outline" href={`/orders/${id}/edit`}><Pencil size={16} />Editar pedido</ButtonLink>
+    <div className="flex flex-col gap-2">
+      <div className="grid gap-3">
+        <ButtonLink variant="outline" className="w-full" href={`/orders/${id}/edit`}><Pencil size={16} />Editar pedido</ButtonLink>
         {status === "CONCLUIDO" ? (
-          <Button variant="outline" disabled={pending} onClick={() => change("PENDENTE")}><Undo2 size={16} />Reabrir pedido</Button>
+          <Button variant="outline" className="w-full" disabled={pending} onClick={() => change("PENDENTE")}><Undo2 size={16} />Reabrir pedido</Button>
         ) : (
           <>
-            {status === "NAO_INICIADO" && <Button variant="navy" disabled={pending} onClick={() => change("PENDENTE")}>Iniciar produção</Button>}
-            <Button disabled={pending} onClick={() => change("CONCLUIDO")}><Check size={16} />Marcar como concluído</Button>
+            {status === "NAO_INICIADO" && <Button variant="navy" className="w-full" disabled={pending} onClick={() => change("PENDENTE")}>Iniciar produção</Button>}
+            <Button className="w-full" disabled={pending} onClick={() => change("CONCLUIDO")}><Check size={16} />Marcar como concluído</Button>
           </>
         )}
-        <Button variant="outline" disabled={pending} onClick={() => setConfirmDelete(true)} className="border-crimson text-crimson-ink hover:bg-crimson-soft"><Trash2 size={16} />Excluir pedido</Button>
+        <Button variant="outline" disabled={pending} onClick={() => setConfirmDelete(true)} className="w-full border-crimson text-crimson-ink hover:bg-crimson-soft"><Trash2 size={16} />Excluir pedido</Button>
       </div>
       {confirmDelete && (
         <ConfirmDialog title="Excluir este pedido?" confirmLabel="Excluir pedido" cancelLabel="Cancelar" busy={pending} onConfirm={remove} onCancel={() => setConfirmDelete(false)}>
