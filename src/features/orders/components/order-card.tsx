@@ -1,6 +1,7 @@
-import { Calendar, Wallet, ChevronRight, ImageIcon, Package, User } from "lucide-react";
+import { Calendar, Factory, Wallet, ChevronRight, ImageIcon, Package, User } from "lucide-react";
 import Link from "next/link";
 import { daysLabel, formatBRL, formatShort, piecesLabel } from "@/lib/format";
+import { currentStage } from "@/lib/stages";
 import type { Order } from "@/lib/types";
 import { cx, PRIORITY_BAR, PriorityBadge, StatusBadge } from "@/components/ui";
 
@@ -50,6 +51,7 @@ export function OrderCard({ order }: { order: Order }) {
             </li>
           );
         })() : null}
+        {currentStage(order.stages) && <li className="flex items-center gap-2.5"><Factory size={15} className="shrink-0 text-ink" />Etapa: {currentStage(order.stages)}</li>}
       </ul>
       <div className="mt-auto flex items-center justify-between">
         <StatusBadge status={order.status} />
