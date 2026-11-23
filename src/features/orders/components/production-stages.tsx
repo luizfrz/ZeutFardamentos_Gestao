@@ -44,7 +44,12 @@ export function ProductionStages({ id, stages }: { id: string; stages: string[] 
     const prev = done;
     setDone(next);
     start(async () => {
-      try { await api.orders.setStages(id, next); router.refresh(); }
+      try {
+        await api.orders.setStages(id, next);
+        const s = STAGES.find((x) => x.key === key)!;
+        if (next.includes(key)) toast.success(s.notice, "Etapa marcada no pedido."); else toast.success(`${s.label} desmarcada`);
+        router.refresh();
+      }
       catch (e) { setDone(prev); toast.error("Não foi possível atualizar a etapa", (e as Error).message); }
     });
   }
