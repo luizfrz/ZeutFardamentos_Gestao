@@ -10,7 +10,7 @@ export default function SizesPage() {
     <>
       <Breadcrumb items={[{ label: "Início", href: "/" }, { label: "Tamanhos" }]} />
       <h1 className="text-4xl font-extrabold tracking-tight">Tamanhos</h1>
-      <p className="mb-8 mt-2 font-semibold text-muted">Grades de tamanho usadas nos pedidos (ex.: XGG, XXGG). Só administradores editam.</p>
+      <p className="mb-8 mt-2 font-semibold text-muted">Grades de tamanho usadas nos pedidos (ex.: XGG, XXGG). </p>
       <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl bg-surface/60" />}>
         <SizesContent />
       </Suspense>

@@ -30,11 +30,6 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
         <StatusBadge status={order.status} />
         <span className="text-sm font-semibold text-muted">Pedido #{String(order.number).padStart(4, "0")} · cadastrado em {formatDate(order.createdAt)}</span>
       </div>
-      {order.stages.includes("ENVIO_IMPRESSAO") && (
-        <div role="status" className="mb-4 flex items-center gap-3 rounded-xl bg-ok-soft px-4 py-3 text-sm font-extrabold uppercase tracking-wide text-ok-ink">
-          <Printer size={20} className="shrink-0" />Foi enviado pra impressão
-        </div>
-      )}
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-4xl font-extrabold tracking-tight">{order.name}</h1>
       </div>
