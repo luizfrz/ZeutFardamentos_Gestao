@@ -36,7 +36,7 @@ function PropertyPicker({ value, onChange, options }: { value: string[]; onChang
         <input value={q} onChange={(e) => { setQ(e.target.value); setOpen(true); }} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (matches[0] && !canCreate) add(matches[0]); else if (canCreate) add(t); } }}
           aria-label="Propriedades do molde" placeholder="Digite para buscar ou criar…"
-          className="min-w-32 flex-1 bg-transparent py-0.5 text-[15px] font-semibold outline-none placeholder:font-normal placeholder:text-muted" />
+          className="min-w-32 flex-1 h-9 bg-transparent text-[15px] font-semibold outline-none placeholder:font-normal placeholder:text-muted" />
         <ChevronDown size={18} className="shrink-0 text-ink" aria-hidden />
       </div>
       {open && (matches.length > 0 || canCreate) && (
@@ -57,7 +57,7 @@ function SizeChips({ sizes, input, onChange }: { sizes: string[]; input: string;
       <div className="mt-3 flex flex-wrap gap-1.5">
         {sizes.map((s) => (
           <span key={s} className="inline-flex items-center gap-1 rounded-md bg-navy-soft py-1 pl-2 pr-1 text-xs font-bold">
-            {s}<button type="button" aria-label={`Remover tamanho ${s}`} onClick={() => onChange(sizes.filter((x) => x !== s), input)} className="grid h-5 w-5 place-items-center rounded text-muted hover:text-crimson-ink"><X size={12} /></button>
+            {s}<button type="button" aria-label={`Remover tamanho ${s}`} onClick={() => onChange(sizes.filter((x) => x !== s), input)} className="grid h-9 w-9 place-items-center rounded text-muted hover:text-crimson-ink"><X size={12} /></button>
           </span>
         ))}
       </div>

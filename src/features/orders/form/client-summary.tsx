@@ -21,7 +21,7 @@ export function ClientSummary({ client }: { client: Client }) {
         <span className="font-extrabold">{client.name}</span>
         <span className="rounded-full bg-navy-soft px-2.5 py-0.5 text-xs font-bold">{CLIENT_TYPE_LABEL[client.type]}</span>
       </div>
-      <dl className="grid gap-x-8 gap-y-3 text-sm sm:grid-cols-2">
+      <dl className="grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-3 text-sm [overflow-wrap:anywhere] sm:grid-cols-2">
         {client.document && <div><dt className="text-xs font-semibold text-muted">{client.type === "PF" ? "CPF" : "CNPJ"}</dt><dd className="font-extrabold">{formatDocument(client.document)}</dd></div>}
         {address && <div><dt className="flex items-center gap-1 text-xs font-semibold text-muted"><MapPin size={12} />Endereço</dt><dd className="font-semibold">{address}</dd></div>}
         {client.contacts.map((c) => {

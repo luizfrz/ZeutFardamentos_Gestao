@@ -32,7 +32,7 @@ export function Payments({ order }: { order: Order }) {
         <p className="mt-4 text-sm font-semibold text-muted">Informe o “Valor total do pedido” em Editar pedido para registrar pagamentos.</p>
       ) : (
         <>
-          <div className="mt-4 flex items-center justify-between gap-3">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <div><div className="text-xs font-semibold text-muted">Valor total</div><div className="text-xl font-extrabold">{formatBRL(totalValue)}</div></div>
             <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold ${paymentStatus === "PAGO" ? "bg-ok-soft text-ok-ink" : "bg-amber-soft text-ink"}`}>
               {paymentStatus === "PAGO" ? <Check size={14} /> : <Clock size={14} />}{paymentStatus === "PAGO" ? "Pago" : "Pagamento pendente"}
@@ -42,7 +42,7 @@ export function Payments({ order }: { order: Order }) {
             {payments.map((p, i) => (
               <li key={p.id} className="flex items-center justify-between gap-2 rounded-xl border border-line bg-cream-2 px-3 py-2 text-sm">
                 <span className="font-semibold">Pagamento {i + 1}: <b>{formatBRL(p.amount)}</b> <span className="text-muted">({formatDate(p.paidAt)})</span></span>
-                <button type="button" aria-label={`Remover pagamento ${i + 1}`} disabled={busy} onClick={() => run(() => api.orders.removePayment(order.id, p.id), "Pagamento removido")} className="grid h-9 w-9 place-items-center text-muted hover:text-crimson-ink"><Trash2 size={15} /></button>
+                <button type="button" aria-label={`Remover pagamento ${i + 1}`} disabled={busy} onClick={() => run(() => api.orders.removePayment(order.id, p.id), "Pagamento removido")} className="grid h-9 w-9 shrink-0 place-items-center text-muted hover:text-crimson-ink"><Trash2 size={15} /></button>
               </li>
             ))}
           </ul>

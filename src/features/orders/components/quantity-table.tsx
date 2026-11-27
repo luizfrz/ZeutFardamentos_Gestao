@@ -1,8 +1,9 @@
 import { pieceIcon, PIECE_LABEL } from "@/features/molds/category";
 import type { Mold, Order, PieceType, SizeGrid } from "@/lib/types";
 
-const th = "px-4 py-2.5 text-xs font-medium uppercase tracking-widest text-muted";
-const td = "px-4 py-3 text-sm";
+const th = "px-2 py-2.5 text-xs font-medium uppercase text-muted sm:px-4 sm:tracking-widest";
+const td = "px-2 py-3 text-sm sm:px-4";
+const wide = "hidden sm:table-cell";
 
 /** "10 anos" para grade infantil; nas demais, "M · Baby Look". */
 const sizeLabel = (size: string, grid?: SizeGrid) =>
@@ -39,15 +40,19 @@ export function QuantityTable({ order, molds, grids }: { order: Order; molds: Mo
               <span className="text-sm font-normal text-muted">· {pieces} {pieces === 1 ? "peça" : "peças"}</span>
             </h3>
             <div className="overflow-x-auto rounded-xl border border-line">
-              <table className="w-full min-w-[460px] text-left">
+              <table className="w-full text-left">
                 <thead className="bg-cream-2">
-                  <tr><th className={th}>Item</th>{sleeve && <th className={th}>Manga</th>}<th className={th}>Tamanho</th><th className={th}>Cor</th><th className={`${th} text-right`}>Qtd.</th></tr>
+                  <tr><th className={th}>Item</th>{sleeve && <th className={`${th} ${wide}`}>Manga</th>}<th className={th}>Tamanho</th><th className={`${th} ${wide}`}>Cor</th><th className={`${th} text-right`}>Qtd.</th></tr>
                 </thead>
                 <tbody>
                   {g.rows.map((r, i) => (
                     <tr key={i} className="border-t border-line">
-                      <td className={`${td} font-bold`}>{r.item}</td>{sleeve && <td className={td}>{r.sleeve ?? "—"}</td>}
-                      <td className={td}>{r.size}</td><td className={td}>{r.color || "—"}</td><td className={`${td} text-right`}>{r.qty}</td>
+                      <td className={`${td} font-bold`}>
+                        {r.item}
+                        <span className="block text-xs font-normal text-muted sm:hidden">{[sleeve && r.sleeve && `Manga ${r.sleeve}`, r.color].filter(Boolean).join(" · ")}</span>
+                      </td>
+                      {sleeve && <td className={`${td} ${wide}`}>{r.sleeve ?? "—"}</td>}
+                      <td className={td}>{r.size}</td><td className={`${td} ${wide}`}>{r.color || "—"}</td><td className={`${td} text-right`}>{r.qty}</td>
                     </tr>
                   ))}
                 </tbody>

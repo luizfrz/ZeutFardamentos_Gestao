@@ -48,8 +48,8 @@ export function GridEditor({ grid }: { grid?: SizeGrid }) {
       )}
       <div className="mt-4 flex flex-wrap gap-1.5">
         {sizes.map((s) => (
-          <span key={s} className="inline-flex items-center gap-1 rounded-md bg-navy-soft py-1 pl-2.5 pr-1 text-sm font-bold">
-            {s}<button type="button" aria-label={`Remover tamanho ${s}`} onClick={() => setSizes(sizes.filter((x) => x !== s))} className="grid h-6 w-6 place-items-center rounded text-muted hover:text-crimson-ink"><X size={13} /></button>
+          <span key={s} className="inline-flex items-center gap-1 rounded-md bg-navy-soft pl-2.5 text-sm font-bold">
+            {s}<button type="button" aria-label={`Remover tamanho ${s}`} onClick={() => setSizes(sizes.filter((x) => x !== s))} className="grid h-9 w-9 place-items-center rounded text-muted hover:text-crimson-ink"><X size={13} /></button>
           </span>
         ))}
       </div>

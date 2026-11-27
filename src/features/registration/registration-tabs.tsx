@@ -25,7 +25,7 @@ export function RegistrationTabs({ initialTab }: { initialTab: Tab }) {
       <div role="tablist" className="mb-8 flex gap-2 border-b border-line">
         {TABS.map((t) => (
           <button key={t.id} type="button" role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}
-            className={cx("-mb-px flex items-center gap-2 border-b-[3px] px-5 py-3.5 text-[15px] font-bold transition-colors",
+            className={cx("-mb-px flex items-center gap-2 border-b-[3px] px-3 py-3.5 sm:px-5 text-[15px] font-bold transition-colors",
               tab === t.id ? "border-crimson text-ink" : "border-transparent text-muted hover:text-ink")}>
             {t.icon}{t.label}
           </button>

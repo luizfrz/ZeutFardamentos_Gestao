@@ -16,26 +16,28 @@ const ICON: Record<string, LucideIcon> = {
 export function StageStepper({ done, onToggle, disabled }: { done: string[]; onToggle: (key: string) => void; disabled?: boolean }) {
   const current = STAGES.find((s) => !done.includes(s.key))?.key;
   return (
-    <ol className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-0">
+    <div className="@container">
+    <ol className="mt-4 grid gap-2 @md:grid-cols-2 @3xl:flex @3xl:items-start @3xl:gap-0">
       {STAGES.map((s, i) => {
         const on = done.includes(s.key);
         const now = s.key === current;
         const Icon = ICON[s.key];
         return (
-          <li key={s.key} className="flex items-center sm:contents">
+          <li key={s.key} className="flex min-w-0 items-center @3xl:contents">
             <button type="button" disabled={disabled} onClick={() => onToggle(s.key)} aria-pressed={on} aria-current={now ? "step" : undefined}
-              className="flex w-full items-center gap-3 rounded-lg py-1 text-left disabled:opacity-60 sm:w-[84px] sm:shrink-0 sm:flex-col sm:gap-1.5 sm:text-center">
+              className="flex w-full items-center gap-3 rounded-lg py-1 text-left disabled:opacity-60 @3xl:w-[84px] @3xl:shrink-0 @3xl:flex-col @3xl:gap-1.5 @3xl:text-center">
               <span className={cx("grid h-[44px] w-[52px] shrink-0 place-items-center rounded-[10px] border-[1.5px]",
                 on ? "border-ok bg-ok text-white" : now ? "border-navy bg-surface text-ink" : "border-slate bg-surface text-muted")}>
                 <Icon size={20} />
               </span>
               <span className={cx("text-xs leading-4", now ? "font-extrabold text-ink" : on ? "text-ink" : "text-muted")}>{s.label}</span>
             </button>
-            {i < STAGES.length - 1 && <span aria-hidden className={cx("hidden h-[3px] min-w-3 flex-1 self-start sm:mt-[20px] sm:block", on ? "bg-ok" : "bg-line")} />}
+            {i < STAGES.length - 1 && <span aria-hidden className={cx("hidden h-[3px] min-w-2 flex-1 self-start @3xl:mt-[20px] @3xl:block", on ? "bg-ok" : "bg-line")} />}
           </li>
         );
       })}
     </ol>
+    </div>
   );
 }
 

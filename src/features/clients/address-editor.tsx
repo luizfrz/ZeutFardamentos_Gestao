@@ -44,11 +44,11 @@ export function AddressEditor({ clientId, address }: { clientId: string; address
   }
   return (
     <div className="mt-4 flex items-start justify-between gap-3">
-      <div>
+      <div className="min-w-0 [overflow-wrap:anywhere]">
         <div className="flex items-center gap-1 text-xs font-semibold text-muted"><MapPin size={12} />Endereço</div>
         <div className="text-sm font-semibold">{text || <span className="text-muted">Não informado</span>}</div>
       </div>
-      <button type="button" onClick={() => setEditing(true)} className="flex shrink-0 items-center gap-1 py-1 text-sm font-bold text-crimson-ink"><Pencil size={14} />{text ? "Editar" : "Adicionar"}</button>
+      <button type="button" onClick={() => setEditing(true)} className="flex min-h-9 shrink-0 items-center gap-1 py-1 text-sm font-bold text-crimson-ink"><Pencil size={14} />{text ? "Editar" : "Adicionar"}</button>
     </div>
   );
 }

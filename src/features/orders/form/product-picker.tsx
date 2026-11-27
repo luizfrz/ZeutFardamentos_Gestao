@@ -61,7 +61,7 @@ export function ProductPicker({ molds, inUseIds, onPick, onCreate, onDeleted }: 
                     </button>
                     <button
                       type="button" onClick={() => askDelete(m)} aria-label={`Excluir ${m.name}`} title="Excluir molde"
-                      className="mr-1 grid h-8 w-8 shrink-0 place-items-center rounded-md text-muted hover:bg-crimson-soft hover:text-crimson-ink focus-visible:opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                      className="mr-1 grid h-9 w-9 shrink-0 place-items-center rounded-md text-muted hover:bg-crimson-soft hover:text-crimson-ink focus-visible:opacity-100 md:opacity-0 md:group-hover:opacity-100"
                     ><Trash2 size={15} /></button>
                   </li>
                 );

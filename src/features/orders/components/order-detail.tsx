@@ -1,4 +1,4 @@
-import { AlertTriangle, Building2, Calendar, ImageIcon, Link2, MessageCircle, Package, Phone, Printer, User } from "lucide-react";
+import { AlertTriangle, Building2, Calendar, ImageIcon, Link2, MessageCircle, Package, Phone, User } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Breadcrumb, Card, CardTitle, cx, PriorityBadge, StatusBadge } from "@/components/ui";
 import { api, ApiError } from "@/lib/api-server";
@@ -109,7 +109,7 @@ export async function OrderDetail({ params }: { params: Promise<{ id: string }> 
                 {client.contacts.map((c) => (
                   <div key={c.kind + c.value} className="mt-4 flex items-center gap-3 rounded-xl border border-line bg-cream-2 p-3">
                     {c.kind === "TELEFONE" ? <Phone size={17} /> : <MessageCircle size={17} />}
-                    <div className="min-w-0">
+                    <div className="min-w-0 [overflow-wrap:anywhere]">
                       <div className="text-sm font-extrabold">{c.kind === "WHATSAPP" ? "WhatsApp" : c.kind === "TELEFONE" ? "Telefone" : "Instagram"} · {c.value}</div>
                       {c.ownerName && <div className="text-xs text-muted">Pertence a: {c.ownerName}</div>}
                     </div>

@@ -137,7 +137,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
       <div className="space-y-6">
-        <Card className="p-7">
+        <Card className="p-4 sm:p-7">
           <StepTitle n={1} title="Vínculos" subtitle="Todo pedido precisa de um cliente e de um responsável." />
           <div className="space-y-5">
             <LinkRows kind="client" rows={clientRows} onChange={setClientRows} all={clients}
@@ -148,8 +148,8 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
           </div>
         </Card>
 
-        <Card className="p-7">
-          <div className="mb-5 flex items-start justify-between gap-4">
+        <Card className="p-4 sm:p-7">
+          <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
             <StepTitle n={2} title="Produtos do pedido" subtitle="Adicione cada tipo de produto encomendado. Um pedido pode ter vários produtos e modelos." />
             <div className="text-right"><div className="text-3xl font-extrabold leading-none">{total}</div><div className="text-xs text-muted">peças em {items.length} {items.length === 1 ? "produto" : "produtos"}</div></div>
           </div>
@@ -169,7 +169,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
           </div>
         </Card>
 
-        <Card className="p-7">
+        <Card className="p-4 sm:p-7">
           <StepTitle n={3} title="Dados do pedido" />
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Nome do pedido" required error={nameInvalid && "Campo obrigatório. Dê um nome para identificar o pedido."}>
@@ -214,7 +214,7 @@ export function OrderForm({ molds, grids, clients, responsibles, initial, preset
           </div>
         </Card>
         {initial && (
-          <Card className="p-7">
+          <Card className="p-4 sm:p-7">
             <CardTitle>Etapas de produção</CardTitle>
             <p className="mt-1 text-xs font-semibold text-muted">Opcional. A etapa em andamento fica destacada.</p>
             <StageStepper done={stages} onToggle={(k) => setStages((d) => (d.includes(k) ? d.filter((x) => x !== k) : [...d, k]))} />

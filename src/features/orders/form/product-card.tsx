@@ -118,7 +118,7 @@ export function ProductCard({ item, mold, molds, grids, onChange, onRemove }: {
                   <span className="text-sm font-semibold text-muted">Adicionar grade:</span>
                   {freeGrids.map((g) => (
                     <button key={g.id} type="button" onClick={() => onChange({ grids: [...item.grids, { gridId: g.id, quantities: {} }] })}
-                      className="rounded-full border border-navy bg-surface px-3.5 py-1.5 text-sm font-bold hover:bg-navy-soft/60">+ {g.name} ({g.description})</button>
+                      className="rounded-full border border-navy min-h-9 bg-surface px-3.5 py-1.5 text-sm font-bold hover:bg-navy-soft/60">+ {g.name} ({g.description})</button>
                   ))}
                 </div>
               )}

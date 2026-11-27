@@ -32,13 +32,13 @@ export function LinkRows<T extends Client | Responsible>({ kind, rows, onChange,
         const client = kind === "client" ? (all as Client[]).find((c) => c.id === r.id) : undefined;
         return (
           <div key={r.key} className="space-y-5">
-            <div className="flex items-start gap-3">
+            <div className="flex flex-col-reverse gap-1 sm:flex-row sm:items-start sm:gap-3">
               <div className="min-w-0 flex-1">
                 <PersonPicker label={t.label} docLabel={t.docLabel} value={r.id} onChange={(id) => set(r.key, id)}
                   people={people} exclude={chosen.filter((id) => id !== r.id)} allowCnpj={kind === "client"}
                   onCreate={() => router.push(t.href)} createLabel={t.create} />
               </div>
-              <Button variant="outline" aria-label={t.remove} disabled={rows.length === 1 && !r.id} onClick={() => drop(r)} className="mt-[26px] h-[47px] shrink-0 !px-4"><X size={20} /></Button>
+              <Button variant="outline" aria-label={t.remove} disabled={rows.length === 1 && !r.id} onClick={() => drop(r)} className="h-10 shrink-0 self-end !px-4 !py-0 sm:mt-[26px] sm:h-[47px] sm:self-auto"><X size={20} /></Button>
             </div>
             {client && <ClientSummary client={client} />}
           </div>
